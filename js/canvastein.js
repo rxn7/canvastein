@@ -7,7 +7,7 @@ export const TILE_SIZE = 64;
 export const MAP_SIZE = MAP_TILE_COUNT * TILE_SIZE;
 export const MINIMAP_TILE_PADDING = 2;
 export const MINIMAP_TILE_SIZE = 20;
-export const MINIMAP_SIZE = MAP_TILE_COUNT * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
+export const MINIMAP_SIZE = MAP_TILE_COUNT * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING) + MINIMAP_TILE_PADDING;
 const MAP = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -44,8 +44,8 @@ export class Canvastein {
         let mapTileRect = new Rect(0, 0, MINIMAP_TILE_SIZE, MINIMAP_TILE_SIZE);
         for (let y = 0; y < MAP_TILE_COUNT; ++y) {
             for (let x = 0; x < MAP_TILE_COUNT; ++x) {
-                mapTileRect.x = x * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
-                mapTileRect.y = y * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
+                mapTileRect.x = MINIMAP_TILE_PADDING + x * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
+                mapTileRect.y = MINIMAP_TILE_PADDING + y * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
                 const tile = MAP[x + y * MAP_TILE_COUNT];
                 if (tile == 0)
                     continue;
