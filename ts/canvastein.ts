@@ -1,52 +1,55 @@
 import * as Renderer from './renderer.js'
 import { Rect } from './rect.js';
 
-export const SUBSCREEN_ASPECT_RATIO: number = 3 / 2;
 export const TILE_SIZE: number = 64; 
 export const MAP_SIZE: number = 10;
+const MAP: number[] = [
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+];
 
 export class Canvastein {
 	private lastTimeStamp: DOMHighResTimeStamp;
-	private subScreenRect: Rect;
 
 	constructor() {
+		Renderer.SetCanvasSize(1920, 1080);
 		this.lastTimeStamp = 0;
-		this.subScreenRect = new Rect();
-		this.OnResize();
 	}
 
-	public Run() {
+	public Run(): void {
 		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
-	private GameLoop(timeStamp: DOMHighResTimeStamp) {
+	private GameLoop(timeStamp: DOMHighResTimeStamp): void {
 		const deltaTime: number = this.lastTimeStamp != 0 ? (timeStamp - this.lastTimeStamp) / 1000 : 1 / 60;
 
-		Renderer.ClearCanvas();
-		Renderer.DrawRect(this.subScreenRect, 'black');
+		Renderer.InitFrame('white');
+		this.DrawMap();
 		Renderer.DrawText(`FPS: ${Math.round(1/deltaTime)}`, 5, 5, 40, 'white', 'monospace', 5, 'black');
 
 		this.lastTimeStamp = timeStamp;
 		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
-	private CalculateSubScreenSize() {
-		const proportionWidth: number = Renderer.canvas.height * SUBSCREEN_ASPECT_RATIO;
+	private DrawMap(): void {
+		let rect: Rect = new Rect(0, 0, TILE_SIZE, TILE_SIZE);
 
-		if(proportionWidth < Renderer.canvas.width) {
-			this.subScreenRect.width = proportionWidth;
-			this.subScreenRect.x = Renderer.canvas.width / 2 - this.subScreenRect.width / 2;
-		} else {
-			this.subScreenRect.width = Renderer.canvas.width;
-			this.subScreenRect.x = 0;
+		for(let y=0; y<MAP_SIZE; ++y) {
+			for(let x=0; x<MAP_SIZE; ++x) {
+				rect.x = x * TILE_SIZE;
+				rect.y = y * TILE_SIZE;
+
+				const tile: number = MAP[x + y * MAP_SIZE];
+				if(tile == 0) continue;
+			}
 		}
-
-		this.subScreenRect.height = this.subScreenRect.width / SUBSCREEN_ASPECT_RATIO;
-		this.subScreenRect.y = Renderer.canvas.height / 2 - this.subScreenRect.height / 2;
-	}
-
-	public OnResize() {
-		Renderer.UpdateCanvasSize();
-		this.CalculateSubScreenSize();
 	}
 }

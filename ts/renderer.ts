@@ -19,17 +19,17 @@ export function DrawText(text: string, x: number = 0, y: number = 0, size: numbe
 	ctx.fillText(text, x, y);
 }
 
-export function DrawRect(rect: Rect, color: string = 'white') {
+export function DrawRect(rect: Rect, color: string = 'white'): void {
 	ctx.fillStyle = color;
 	ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 }
 
-export function ClearCanvas(color: string = 'white'): void {
+export function InitFrame(color: string = 'black'): void {
 	ctx.fillStyle = color;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-export function UpdateCanvasSize(): void {
-	canvas.width = window.innerWidth * window.devicePixelRatio;
-	canvas.height = window.innerHeight * window.devicePixelRatio;
+export function SetCanvasSize(width: number = 1920, height: number = 1080): void {
+	canvas.width = width;
+	canvas.height = height;
 }

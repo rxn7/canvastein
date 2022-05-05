@@ -6,7 +6,3 @@ window.addEventListener('load', () => {
 	canvastein = new Canvastein();
 	canvastein.Run();
 });
-
-window.addEventListener('resize', () => {
-	canvastein.OnResize();
-});

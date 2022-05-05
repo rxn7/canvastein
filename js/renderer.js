@@ -17,11 +17,11 @@ export function DrawRect(rect, color = 'white') {
     ctx.fillStyle = color;
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 }
-export function ClearCanvas(color = 'white') {
+export function InitFrame(color = 'black') {
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
-export function UpdateCanvasSize() {
-    canvas.width = window.innerWidth * window.devicePixelRatio;
-    canvas.height = window.innerHeight * window.devicePixelRatio;
+export function SetCanvasSize(width = 1920, height = 1080) {
+    canvas.width = width;
+    canvas.height = height;
 }
