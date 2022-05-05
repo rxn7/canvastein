@@ -1,22 +1,35 @@
+import { Rect } from './rect.js';
+
 export const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 export const ctx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-export function DrawText(text: string, x: number = 0, y: number = 0, fontSize: number = 20, fontColor: string = 'white', align: CanvasTextAlign = 'left', baseLine: CanvasTextBaseline = 'top', font: string = 'monospace'): void {
-	ctx.fillStyle = fontColor;
-	ctx.font = `${fontSize}px ${font}`;
+export function DrawText(text: string, x: number = 0, y: number = 0, size: number = 20, color: string = 'white', font: string = 'monospace', strokeSize: number = 0, strokeColor: string = 'black', align: CanvasTextAlign = 'left', baseline: CanvasTextBaseline = 'top'): void {
+	ctx.fillStyle = color;
+	ctx.font = `${size}px ${font}`;
 	ctx.textAlign = align;
-	ctx.textBaseline = baseLine;
+	ctx.textBaseline = baseline;
+
+	if(strokeSize != 0) {
+		ctx.lineJoin = 'bevel';
+		ctx.lineWidth = strokeSize;
+		ctx.strokeStyle = strokeColor;
+		ctx.strokeText(text, x, y);
+	}
+
 	ctx.fillText(text, x, y);
 }
 
-export function ClearCanvas(): void {
-	ctx.fillStyle = 'black';
+export function DrawRect(rect: Rect, color: string = 'white') {
+	ctx.fillStyle = color;
+	ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+export function ClearCanvas(color: string = 'white'): void {
+	ctx.fillStyle = color;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 export function UpdateCanvasSize(): void {
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+	canvas.width = window.innerWidth * window.devicePixelRatio;
+	canvas.height = window.innerHeight * window.devicePixelRatio;
 }
-
-window.addEventListener('resize', UpdateCanvasSize);
