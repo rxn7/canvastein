@@ -1,9 +1,11 @@
 import * as Renderer from './renderer.js'
 import { Rect } from './rect.js';
-
-export const TILE_SIZE: number = 64; 
+import { Player } from './player.js';
+import { Vector2 } from './vector2.js';
 
 export const MAP_TILE_COUNT: number = 10;
+export const TILE_SIZE: number = 64; 
+export const MAP_SIZE: number = MAP_TILE_COUNT * TILE_SIZE;
 export const MINIMAP_TILE_PADDING: number = 2;
 export const MINIMAP_TILE_SIZE = 20;
 export const MINIMAP_SIZE = MAP_TILE_COUNT * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
@@ -23,10 +25,12 @@ const MAP: number[] = [
 
 export class Canvastein {
 	private lastTimeStamp: DOMHighResTimeStamp;
+	private player: Player;
 
 	constructor() {
-		Renderer.SetCanvasSize(1920, 1080);
+		this.player = new Player(new Vector2(MAP_SIZE/2, MAP_SIZE/2), 0);
 		this.lastTimeStamp = 0;
+		Renderer.SetCanvasSize(1920, 1080);
 	}
 
 	public Run(): void {
@@ -36,7 +40,9 @@ export class Canvastein {
 	private GameLoop(timeStamp: DOMHighResTimeStamp): void {
 		const deltaTime: number = this.lastTimeStamp != 0 ? (timeStamp - this.lastTimeStamp) / 1000 : 1 / 60;
 
-		Renderer.InitFrame('white');
+		this.player.Update(deltaTime);
+
+		Renderer.BeginFrame('white');
 		this.DrawMinimap();
 		Renderer.DrawText(`FPS: ${Math.round(1/deltaTime)}`, Renderer.canvas.width-5, 5, 40, 'white', 'monospace', 5, 'black', 'right');
 
@@ -61,6 +67,11 @@ export class Canvastein {
 			}
 		}
 		Renderer.Fill('#555');
+		Renderer.End();
+
+		Renderer.Begin();
+		Renderer.AddCircle(this.player.position.x / MAP_SIZE * MINIMAP_SIZE, this.player.position.y / MAP_SIZE * MINIMAP_SIZE, 5);
+		Renderer.Fill('#f52');
 		Renderer.End();
 	}
 }

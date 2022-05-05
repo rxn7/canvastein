@@ -26,6 +26,9 @@ export function End() {
 export function AddRect(rect) {
     ctx.rect(rect.x, rect.y, rect.width, rect.height);
 }
+export function AddCircle(x, y, radius) {
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+}
 export function Fill(style) {
     ctx.fillStyle = style;
     ctx.fill();
@@ -34,7 +37,7 @@ export function Stroke(style) {
     ctx.strokeStyle = style;
     ctx.stroke();
 }
-export function InitFrame(color = 'black') {
+export function BeginFrame(color = 'black') {
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }

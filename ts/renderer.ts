@@ -19,21 +19,25 @@ export function DrawText(text: string, x: number = 0, y: number = 0, size: numbe
 	ctx.fillText(text, x, y);
 }
 
-export function FillRect(rect: Rect, style: string) {
+export function FillRect(rect: Rect, style: string): void {
 	ctx.fillStyle = style;
 	ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 }
 
-export function Begin() {
+export function Begin(): void {
 	ctx.beginPath();
 }
 
-export function End() {
+export function End(): void {
 	ctx.closePath();
 }
 
 export function AddRect(rect: Rect): void {
 	ctx.rect(rect.x, rect.y, rect.width, rect.height);
+}
+
+export function AddCircle(x: number, y: number, radius: number): void {
+	ctx.arc(x, y, radius, 0, Math.PI * 2);
 }
 
 export function Fill(style: string): void {
@@ -46,7 +50,7 @@ export function Stroke(style: string): void {
 	ctx.stroke();
 }
 
-export function InitFrame(color: string = 'black'): void {
+export function BeginFrame(color: string = 'black'): void {
 	ctx.fillStyle = color;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
