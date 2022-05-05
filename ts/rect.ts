@@ -10,4 +10,4 @@ export class Rect {
 		this.width = width;
 		this.height = height;
 	}
-};
+}

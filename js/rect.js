@@ -6,4 +6,3 @@ export class Rect {
         this.height = height;
     }
 }
-;
