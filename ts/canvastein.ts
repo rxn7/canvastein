@@ -44,7 +44,7 @@ export class Canvastein {
 
 		Renderer.BeginFrame('white');
 		this.DrawMinimap();
-		Renderer.DrawText(`FPS: ${Math.round(1/deltaTime)}`, Renderer.canvas.width-5, 5, 40, 'white', 'monospace', 5, 'black', 'right');
+		Renderer.DrawText(`FPS: ${Math.round(1/deltaTime)}`, new Vector2(Renderer.canvas.width-5, 5), 40, 'white', 'monospace', 5, 'black', 'right');
 
 		this.lastTimeStamp = timeStamp;
 		window.requestAnimationFrame(this.GameLoop.bind(this));
@@ -69,9 +69,18 @@ export class Canvastein {
 		Renderer.Fill('#555');
 		Renderer.End();
 
+		const playerMinimapPosition: Vector2 = new Vector2(this.player.position.x / MAP_SIZE * MINIMAP_SIZE, this.player.position.y / MAP_SIZE * MINIMAP_SIZE);
+
+		// Draw player icon
 		Renderer.Begin();
-		Renderer.AddCircle(this.player.position.x / MAP_SIZE * MINIMAP_SIZE, this.player.position.y / MAP_SIZE * MINIMAP_SIZE, 5);
+		Renderer.AddCircle(playerMinimapPosition, 5);
 		Renderer.Fill('#f52');
+		Renderer.End();
+
+		// Draw player direction
+		Renderer.Begin();
+		Renderer.AddLine(playerMinimapPosition, new Vector2(playerMinimapPosition.x + Math.cos(this.player.angle) * 10, playerMinimapPosition.y + Math.sin(this.player.angle) * 10), 2);
+		Renderer.Stroke('#5f2');
 		Renderer.End();
 	}
 }

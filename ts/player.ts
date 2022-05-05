@@ -1,6 +1,7 @@
 import { Vector2 } from './vector2.js';
 
 const MOVE_SPEED: number = 100;
+const ROTATE_SPEED: number = 2;
 
 export class Player {
 	public position: Vector2;
@@ -24,14 +25,16 @@ export class Player {
 	}
 
 	public Update(deltaTime: number) {
-		let moveDirection: Vector2 = new Vector2(0,0);
-		if(this.up) moveDirection.y--;
-		if(this.down) moveDirection.y++;
-		if(this.left) moveDirection.x--;
-		if(this.right) moveDirection.x++;
+		if(this.left) this.angle -= ROTATE_SPEED * deltaTime;
+		if(this.right) this.angle += ROTATE_SPEED * deltaTime;
 
-		this.position.x += moveDirection.x * MOVE_SPEED * deltaTime;
-		this.position.y += moveDirection.y * MOVE_SPEED * deltaTime;
+		if(this.up) {
+			this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
+			this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+		} else if(this.down) {
+			this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
+			this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+		}
 	}
 
 	private OnKeyPress(e: KeyboardEvent) {

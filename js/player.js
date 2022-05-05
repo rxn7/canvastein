@@ -1,5 +1,5 @@
-import { Vector2 } from './vector2.js';
 const MOVE_SPEED = 100;
+const ROTATE_SPEED = 2;
 export class Player {
     constructor(position, angle) {
         this.position = position;
@@ -12,17 +12,18 @@ export class Player {
         window.addEventListener('keyup', this.OnKeyUp.bind(this));
     }
     Update(deltaTime) {
-        let moveDirection = new Vector2(0, 0);
-        if (this.up)
-            moveDirection.y--;
-        if (this.down)
-            moveDirection.y++;
         if (this.left)
-            moveDirection.x--;
+            this.angle -= ROTATE_SPEED * deltaTime;
         if (this.right)
-            moveDirection.x++;
-        this.position.x += moveDirection.x * MOVE_SPEED * deltaTime;
-        this.position.y += moveDirection.y * MOVE_SPEED * deltaTime;
+            this.angle += ROTATE_SPEED * deltaTime;
+        if (this.up) {
+            this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
+            this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+        }
+        else if (this.down) {
+            this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
+            this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+        }
     }
     OnKeyPress(e) {
         e.preventDefault();

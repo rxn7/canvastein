@@ -1,6 +1,6 @@
 export const canvas = document.getElementById('canvas');
 export const ctx = canvas.getContext('2d');
-export function DrawText(text, x = 0, y = 0, size = 20, color = 'white', font = 'monospace', strokeSize = 0, strokeColor = 'black', align = 'left', baseline = 'top') {
+export function DrawText(text, position, size = 20, color = 'white', font = 'monospace', strokeSize = 0, strokeColor = 'black', align = 'left', baseline = 'top') {
     ctx.fillStyle = color;
     ctx.font = `${size}px ${font}`;
     ctx.textAlign = align;
@@ -9,9 +9,9 @@ export function DrawText(text, x = 0, y = 0, size = 20, color = 'white', font = 
         ctx.lineJoin = 'bevel';
         ctx.lineWidth = strokeSize;
         ctx.strokeStyle = strokeColor;
-        ctx.strokeText(text, x, y);
+        ctx.strokeText(text, position.x, position.y);
     }
-    ctx.fillText(text, x, y);
+    ctx.fillText(text, position.x, position.y);
 }
 export function FillRect(rect, style) {
     ctx.fillStyle = style;
@@ -26,8 +26,13 @@ export function End() {
 export function AddRect(rect) {
     ctx.rect(rect.x, rect.y, rect.width, rect.height);
 }
-export function AddCircle(x, y, radius) {
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
+export function AddCircle(position, radius) {
+    ctx.arc(position.x, position.y, radius, 0, Math.PI * 2);
+}
+export function AddLine(start, end, width) {
+    ctx.lineWidth = width;
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
 }
 export function Fill(style) {
     ctx.fillStyle = style;
