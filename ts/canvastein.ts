@@ -2,13 +2,18 @@ import * as Renderer from './renderer.js'
 import { Rect } from './rect.js';
 
 export const TILE_SIZE: number = 64; 
-export const MAP_SIZE: number = 10;
+
+export const MAP_TILE_COUNT: number = 10;
+export const MINIMAP_TILE_PADDING: number = 2;
+export const MINIMAP_TILE_SIZE = 20;
+export const MINIMAP_SIZE = MAP_TILE_COUNT * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
+
 const MAP: number[] = [
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
@@ -32,23 +37,26 @@ export class Canvastein {
 		const deltaTime: number = this.lastTimeStamp != 0 ? (timeStamp - this.lastTimeStamp) / 1000 : 1 / 60;
 
 		Renderer.InitFrame('white');
-		this.DrawMap();
-		Renderer.DrawText(`FPS: ${Math.round(1/deltaTime)}`, 5, 5, 40, 'white', 'monospace', 5, 'black');
+		this.DrawMinimap();
+		Renderer.DrawText(`FPS: ${Math.round(1/deltaTime)}`, Renderer.canvas.width-5, 5, 40, 'white', 'monospace', 5, 'black', 'right');
 
 		this.lastTimeStamp = timeStamp;
 		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
-	private DrawMap(): void {
-		let rect: Rect = new Rect(0, 0, TILE_SIZE, TILE_SIZE);
+	private DrawMinimap(): void {
+		Renderer.DrawRect(new Rect(0, 0, MINIMAP_SIZE, MINIMAP_SIZE), 'black');
 
-		for(let y=0; y<MAP_SIZE; ++y) {
-			for(let x=0; x<MAP_SIZE; ++x) {
-				rect.x = x * TILE_SIZE;
-				rect.y = y * TILE_SIZE;
+		let mapTileRect: Rect = new Rect(0, 0, MINIMAP_TILE_SIZE, MINIMAP_TILE_SIZE);
+		for(let y=0; y<MAP_TILE_COUNT; ++y) {
+			for(let x=0; x<MAP_TILE_COUNT; ++x) {
+				mapTileRect.x = x * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
+				mapTileRect.y = y * (MINIMAP_TILE_SIZE + MINIMAP_TILE_PADDING);
 
-				const tile: number = MAP[x + y * MAP_SIZE];
+				const tile: number = MAP[x + y * MAP_TILE_COUNT];
 				if(tile == 0) continue;
+
+				Renderer.DrawRect(mapTileRect);
 			}
 		}
 	}
