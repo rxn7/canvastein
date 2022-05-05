@@ -13,9 +13,26 @@ export function DrawText(text, x = 0, y = 0, size = 20, color = 'white', font = 
     }
     ctx.fillText(text, x, y);
 }
-export function DrawRect(rect, color = 'white') {
-    ctx.fillStyle = color;
+export function FillRect(rect, style) {
+    ctx.fillStyle = style;
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+export function Begin() {
+    ctx.beginPath();
+}
+export function End() {
+    ctx.closePath();
+}
+export function AddRect(rect) {
+    ctx.rect(rect.x, rect.y, rect.width, rect.height);
+}
+export function Fill(style) {
+    ctx.fillStyle = style;
+    ctx.fill();
+}
+export function Stroke(style) {
+    ctx.strokeStyle = style;
+    ctx.stroke();
 }
 export function InitFrame(color = 'black') {
     ctx.fillStyle = color;

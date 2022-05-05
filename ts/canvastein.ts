@@ -45,8 +45,9 @@ export class Canvastein {
 	}
 
 	private DrawMinimap(): void {
-		Renderer.DrawRect(new Rect(0, 0, MINIMAP_SIZE, MINIMAP_SIZE), 'black');
+		Renderer.FillRect(new Rect(0, 0, MINIMAP_SIZE, MINIMAP_SIZE), '#aaa');
 
+		Renderer.Begin();
 		let mapTileRect: Rect = new Rect(0, 0, MINIMAP_TILE_SIZE, MINIMAP_TILE_SIZE);
 		for(let y=0; y<MAP_TILE_COUNT; ++y) {
 			for(let x=0; x<MAP_TILE_COUNT; ++x) {
@@ -56,8 +57,10 @@ export class Canvastein {
 				const tile: number = MAP[x + y * MAP_TILE_COUNT];
 				if(tile == 0) continue;
 
-				Renderer.DrawRect(mapTileRect);
+				Renderer.AddRect(mapTileRect);
 			}
 		}
+		Renderer.Fill('#555');
+		Renderer.End();
 	}
 }

@@ -19,9 +19,31 @@ export function DrawText(text: string, x: number = 0, y: number = 0, size: numbe
 	ctx.fillText(text, x, y);
 }
 
-export function DrawRect(rect: Rect, color: string = 'white'): void {
-	ctx.fillStyle = color;
+export function FillRect(rect: Rect, style: string) {
+	ctx.fillStyle = style;
 	ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+export function Begin() {
+	ctx.beginPath();
+}
+
+export function End() {
+	ctx.closePath();
+}
+
+export function AddRect(rect: Rect): void {
+	ctx.rect(rect.x, rect.y, rect.width, rect.height);
+}
+
+export function Fill(style: string): void {
+	ctx.fillStyle = style;
+	ctx.fill();
+}
+
+export function Stroke(style: string): void {
+	ctx.strokeStyle = style;
+	ctx.stroke();
 }
 
 export function InitFrame(color: string = 'black'): void {
