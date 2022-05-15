@@ -1,30 +1,43 @@
 import { Vector2 } from './vector2.js';
 import * as Maths from './maths.js';
 export class Player {
-    constructor(position, angle) {
-        this.moveSpeed = 5;
-        this.rotateSpeed = 200;
+    constructor(position, yaw) {
+        this.input = {
+            walkLeft: false,
+            walkRight: false,
+            walkForward: false,
+            walkBackward: false,
+            rotateLeft: false,
+            rotateRight: false,
+        };
+        this.moveSpeed = 2;
         this.position = position;
-        this.angle = angle;
-        this.left = false;
-        this.right = false;
-        this.up = false;
-        this.down = false;
+        this.yaw = yaw;
+        this.pitch = 0;
         window.addEventListener('keypress', this.OnKeyPress.bind(this));
         window.addEventListener('keyup', this.OnKeyUp.bind(this));
+        window.addEventListener('mousemove', this.OnMouseMove.bind(this));
     }
     Update(canvastein, frameDelta) {
-        if (this.left)
-            this.Rotate(this.rotateSpeed * frameDelta);
-        if (this.right)
-            this.Rotate(-this.rotateSpeed * frameDelta);
-        const angleRad = Maths.Deg2Rad(this.angle);
-        let moveDirection = new Vector2();
-        let moveDirectionMultiplier = 0;
-        this.up && moveDirectionMultiplier++;
-        this.down && moveDirectionMultiplier--;
-        moveDirection.x = moveDirectionMultiplier * Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
-        moveDirection.y = moveDirectionMultiplier * -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+        const yawRad = Maths.Deg2Rad(this.yaw);
+        let moveDirection = Vector2.Zero();
+        if (this.input.walkForward) {
+            moveDirection.x += Math.cos(yawRad);
+            moveDirection.y -= Math.sin(yawRad);
+        }
+        if (this.input.walkBackward) {
+            moveDirection.x -= Math.cos(yawRad);
+            moveDirection.y += Math.sin(yawRad);
+        }
+        if (this.input.walkLeft) {
+            moveDirection.x += Math.cos(yawRad + Math.PI / 2);
+            moveDirection.y -= Math.sin(yawRad + Math.PI / 2);
+        }
+        if (this.input.walkRight) {
+            moveDirection.x -= Math.cos(yawRad + Math.PI / 2);
+            moveDirection.y += Math.sin(yawRad + Math.PI / 2);
+        }
+        moveDirection = moveDirection.Mul(frameDelta * this.moveSpeed);
         if ((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
             if (canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {
                 this.position.x += moveDirection.x;
@@ -36,27 +49,33 @@ export class Player {
             }
         }
     }
-    Rotate(angle) {
-        this.angle += angle;
-        if (this.angle < 0)
-            this.angle += 360;
-        if (this.angle > 360)
-            this.angle -= 360;
+    Rotate(yaw, pitch) {
+        this.yaw += yaw;
+        if (this.yaw < 0)
+            this.yaw += 360;
+        if (this.yaw > 360)
+            this.yaw -= 360;
+        console.log(this.yaw);
+        this.pitch += pitch;
+        if (this.pitch > 90)
+            this.pitch = 90;
+        else if (this.pitch < -90)
+            this.pitch = -90;
     }
     OnKeyPress(e) {
         e.preventDefault();
         switch (e.key) {
             case 'w':
-                this.up = true;
+                this.input.walkForward = true;
                 break;
             case 's':
-                this.down = true;
+                this.input.walkBackward = true;
                 break;
             case 'a':
-                this.left = true;
+                this.input.walkLeft = true;
                 break;
             case 'd':
-                this.right = true;
+                this.input.walkRight = true;
                 break;
         }
     }
@@ -64,17 +83,20 @@ export class Player {
         e.preventDefault();
         switch (e.key) {
             case 'w':
-                this.up = false;
+                this.input.walkForward = false;
                 break;
             case 's':
-                this.down = false;
+                this.input.walkBackward = false;
                 break;
             case 'a':
-                this.left = false;
+                this.input.walkLeft = false;
                 break;
             case 'd':
-                this.right = false;
+                this.input.walkRight = false;
                 break;
         }
+    }
+    OnMouseMove(e) {
+        this.Rotate(-e.movementX * 0.1, e.movementY * 0.1);
     }
 }

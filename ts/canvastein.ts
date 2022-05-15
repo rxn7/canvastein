@@ -25,6 +25,7 @@ export class Canvastein {
 	constructor() {
 		Renderer.Init(Renderer.RenderingApiType.WebGL);
 		Renderer.SetSize(window.innerWidth, window.innerHeight);
+		Renderer.guiCanvas.addEventListener('click', () => Renderer.canvas.requestPointerLock());
 		this.player = new Player(new Vector2(this.map[0].length/2, this.map.length/2), 0);
 		this.frameDelta = 0;
 		this.lastTimeStamp = 0;
@@ -74,9 +75,10 @@ export class Canvastein {
 		let rayCount: number = Renderer.canvas.width;
 		if(Renderer.apiType == Renderer.RenderingApiType.Canvas2D) rayCount /= 12; // Lower the quality if using Canvas2D renderer. Canvas2D renderer can't handle rendering that much lines.
 
-		const forwardDirection: Vector2 = new Vector2(Math.cos(Maths.Deg2Rad(this.player.angle)), -Math.sin(Maths.Deg2Rad(this.player.angle)));
+		const forwardDirection: Vector2 = new Vector2(Math.cos(Maths.Deg2Rad(this.player.yaw)), -Math.sin(Maths.Deg2Rad(this.player.yaw)));
 		const rightDirection: Vector2 = new Vector2(-forwardDirection.y, forwardDirection.x);
 		let rayPosition: Vector2 = this.player.position.Copy();
+		const playerPitch: number = Maths.Deg2Rad(this.player.pitch) * 2;
 
 		Renderer.SetLineWidth((Renderer.canvas.width / rayCount) + 2);
 		for(let rayIndex: number = 0; rayIndex<rayCount; rayIndex++) {
@@ -144,8 +146,8 @@ export class Canvastein {
 				toColor.Mul(0.9);
 			}
 
-			Renderer.DrawLine(new Vector2(interpolationCoefficient, wallHeight), new Vector2(interpolationCoefficient, -wallHeight), fromColor, toColor);
-			Renderer.DrawLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight), new Color(0.4, 0.4, 0.4), new Color(0.2, 0.2, 0.2));
+			Renderer.DrawLine(new Vector2(interpolationCoefficient, wallHeight + playerPitch), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), fromColor, toColor);
+			Renderer.DrawLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), new Color(0.4, 0.4, 0.4), new Color(0.2, 0.2, 0.2));
 		}
 	}
 }

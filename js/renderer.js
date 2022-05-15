@@ -5,9 +5,9 @@ import { Canvas2dApi } from './canvas2d_api.js';
 export let canvas;
 export const clearColor = new Color(0, 0, 1);
 export let lineWidth = 1;
-export let api;
 export let apiType;
-let guiCanvas;
+export let guiCanvas;
+let api;
 let guiCtx;
 export var RenderingApiType;
 (function (RenderingApiType) {
@@ -18,7 +18,6 @@ export var RenderingApiType;
 let halfHeight = 0;
 let halfWidth = 0;
 export function Init(_api) {
-    apiType = _api;
     if (canvas) {
         canvas.remove();
     }
@@ -33,13 +32,16 @@ export function Init(_api) {
     switch (_api) {
         case RenderingApiType.WebGL:
             api = new WebGLApi();
+            apiType = RenderingApiType.WebGL;
             if (!api.HasInitialized()) {
                 alert('Falling back to Canvas2D renderer. This renderer is experimental and may look different than the WebGL version.');
                 api = new Canvas2dApi();
+                apiType = RenderingApiType.Canvas2D;
             }
             break;
         case RenderingApiType.Canvas2D:
             api = new Canvas2dApi();
+            apiType = RenderingApiType.Canvas2D;
             break;
     }
     if (!api.HasInitialized()) {

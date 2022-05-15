@@ -5,7 +5,8 @@ import { Canvastein } from './canvastein.js';
 
 export class Player {
 	public position: Vector2;
-	public angle: number;
+	public yaw: number;
+	public pitch: number;
 
 	private input = {
 		walkLeft: false,
@@ -15,37 +16,40 @@ export class Player {
 		rotateLeft: false,
 		rotateRight: false,
 	};
-	private moveSpeed: number = 5;
-	private rotateSpeed: number = 200;
 
-	constructor(position: Vector2, angle: number) {
+	private moveSpeed: number = 2;
+
+	constructor(position: Vector2, yaw: number) {
 		this.position = position;
-		this.angle = angle;
+		this.yaw = yaw;
+		this.pitch = 0;
 
 		window.addEventListener('keypress', this.OnKeyPress.bind(this));
 		window.addEventListener('keyup', this.OnKeyUp.bind(this));
+		window.addEventListener('mousemove', this.OnMouseMove.bind(this));
 	}
 
 	public Update(canvastein: Canvastein, frameDelta: number, ) {
-		if(this.input.rotateLeft)	this.Rotate(this.rotateSpeed * frameDelta);
-		if(this.input.rotateRight)	this.Rotate(-this.rotateSpeed * frameDelta);
-
-		const angleRad: number = Maths.Deg2Rad(this.angle);
-
+		const yawRad: number = Maths.Deg2Rad(this.yaw);
 		let moveDirection: Vector2 = Vector2.Zero();
-
-		if(this.up) {
-			moveDirection.x += Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
-			moveDirection.y += -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+		if(this.input.walkForward) {
+			moveDirection.x += Math.cos(yawRad);
+			moveDirection.y -= Math.sin(yawRad);
 		}
-		if(this.down) {
-			moveDirection.x -= Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
-			moveDirection.y -= -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+		if(this.input.walkBackward) {
+			moveDirection.x -= Math.cos(yawRad);
+			moveDirection.y += Math.sin(yawRad);
 		}
-		if(this.left) {
-
+		if(this.input.walkLeft) {
+			moveDirection.x += Math.cos(yawRad + Math.PI/2);
+			moveDirection.y -= Math.sin(yawRad + Math.PI/2);
+		}
+		if(this.input.walkRight) {
+			moveDirection.x -= Math.cos(yawRad + Math.PI/2);
+			moveDirection.y += Math.sin(yawRad + Math.PI/2);
 		}
 
+		moveDirection = moveDirection.Mul(frameDelta * this.moveSpeed);
 
 		if((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
 			if(canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {
@@ -60,20 +64,25 @@ export class Player {
 		}
 	}
 
-	private Rotate(angle: number) {
-		this.angle += angle;
-		if(this.angle < 0) this.angle += 360;
-		if(this.angle > 360) this.angle -= 360;
+	private Rotate(yaw: number, pitch: number) {
+		this.yaw += yaw;
+		if(this.yaw < 0) this.yaw += 360;
+		if(this.yaw > 360) this.yaw -= 360;
+		console.log(this.yaw);
+
+		this.pitch += pitch;
+		if(this.pitch > 90) this.pitch = 90;
+		else if(this.pitch < -90) this.pitch = -90;
 	}
 
 	private OnKeyPress(e: KeyboardEvent) {
 		e.preventDefault();
 
 		switch(e.key) {
-			case 'w': this.up = true; break;
-			case 's': this.down = true; break;
-			case 'a': this.left = true; break;
-			case 'd': this.right = true; break;
+			case 'w': this.input.walkForward = true; break;
+			case 's': this.input.walkBackward = true; break;
+			case 'a': this.input.walkLeft = true; break;
+			case 'd': this.input.walkRight = true; break;
 		}
 	}
 
@@ -81,10 +90,14 @@ export class Player {
 		e.preventDefault();
 
 		switch(e.key) {
-			case 'w': this.up = false; break;
-			case 's': this.down = false; break;
-			case 'a': this.left = false; break;
-			case 'd': this.right = false; break;
+			case 'w': this.input.walkForward = false; break;
+			case 's': this.input.walkBackward = false; break;
+			case 'a': this.input.walkLeft = false; break;
+			case 'd': this.input.walkRight = false; break;
 		}
+	}
+
+	private OnMouseMove(e: MouseEvent) {
+		this.Rotate(-e.movementX * 0.1, e.movementY * 0.1);
 	}
 }
