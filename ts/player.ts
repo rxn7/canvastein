@@ -1,7 +1,7 @@
 import { Vector2 } from './vector2.js';
+import * as Maths from './maths.js';
+import { Canvastein } from './canvastein.js';
 
-const MOVE_SPEED: number = 100;
-const ROTATE_SPEED: number = 2;
 
 export class Player {
 	public position: Vector2;
@@ -11,6 +11,8 @@ export class Player {
 	private right: boolean;
 	private up: boolean;
 	private down: boolean;
+	private moveSpeed: number = 5;
+	private rotateSpeed: number = 200;
 
 	constructor(position: Vector2, angle: number) {
 		this.position = position;
@@ -24,17 +26,38 @@ export class Player {
 		window.addEventListener('keyup', this.OnKeyUp.bind(this));
 	}
 
-	public Update(deltaTime: number) {
-		if(this.left) this.angle -= ROTATE_SPEED * deltaTime;
-		if(this.right) this.angle += ROTATE_SPEED * deltaTime;
+	public Update(canvastein: Canvastein, frameDelta: number, ) {
+		if(this.left)	this.Rotate(this.rotateSpeed * frameDelta);
+		if(this.right)	this.Rotate(-this.rotateSpeed * frameDelta);
 
-		if(this.up) {
-			this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
-			this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
-		} else if(this.down) {
-			this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
-			this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+		const angleRad: number = Maths.Deg2Rad(this.angle);
+
+		let moveDirection: Vector2 = new Vector2();
+		let moveDirectionMultiplier: number = 0;
+
+		this.up && moveDirectionMultiplier++;
+		this.down && moveDirectionMultiplier--;
+
+		moveDirection.x = moveDirectionMultiplier * Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+		moveDirection.y = moveDirectionMultiplier * -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+
+		if((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
+			if(canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {
+				this.position.x += moveDirection.x;
+			}
 		}
+
+		if((Math.floor(this.position.y + moveDirection.y) >= 0) && (Math.floor(this.position.y + moveDirection.y) < canvastein.map.length)) {
+			if(canvastein.map[Math.floor(this.position.y + moveDirection.y)][Math.floor(this.position.x)] == 0) {
+				this.position.y += moveDirection.y;
+			}
+		}
+	}
+
+	private Rotate(angle: number) {
+		this.angle += angle;
+		if(this.angle < 0) this.angle += 360;
+		if(this.angle > 360) this.angle -= 360;
 	}
 
 	private OnKeyPress(e: KeyboardEvent) {

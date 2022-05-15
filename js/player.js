@@ -1,7 +1,9 @@
-const MOVE_SPEED = 100;
-const ROTATE_SPEED = 2;
+import { Vector2 } from './vector2.js';
+import * as Maths from './maths.js';
 export class Player {
     constructor(position, angle) {
+        this.moveSpeed = 5;
+        this.rotateSpeed = 200;
         this.position = position;
         this.angle = angle;
         this.left = false;
@@ -11,19 +13,35 @@ export class Player {
         window.addEventListener('keypress', this.OnKeyPress.bind(this));
         window.addEventListener('keyup', this.OnKeyUp.bind(this));
     }
-    Update(deltaTime) {
+    Update(canvastein, frameDelta) {
         if (this.left)
-            this.angle -= ROTATE_SPEED * deltaTime;
+            this.Rotate(this.rotateSpeed * frameDelta);
         if (this.right)
-            this.angle += ROTATE_SPEED * deltaTime;
-        if (this.up) {
-            this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
-            this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+            this.Rotate(-this.rotateSpeed * frameDelta);
+        const angleRad = Maths.Deg2Rad(this.angle);
+        let moveDirection = new Vector2();
+        let moveDirectionMultiplier = 0;
+        this.up && moveDirectionMultiplier++;
+        this.down && moveDirectionMultiplier--;
+        moveDirection.x = moveDirectionMultiplier * Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+        moveDirection.y = moveDirectionMultiplier * -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+        if ((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
+            if (canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {
+                this.position.x += moveDirection.x;
+            }
         }
-        else if (this.down) {
-            this.position.x += Math.cos(this.angle) * MOVE_SPEED * deltaTime;
-            this.position.y += Math.sin(this.angle) * MOVE_SPEED * deltaTime;
+        if ((Math.floor(this.position.y + moveDirection.y) >= 0) && (Math.floor(this.position.y + moveDirection.y) < canvastein.map.length)) {
+            if (canvastein.map[Math.floor(this.position.y + moveDirection.y)][Math.floor(this.position.x)] == 0) {
+                this.position.y += moveDirection.y;
+            }
         }
+    }
+    Rotate(angle) {
+        this.angle += angle;
+        if (this.angle < 0)
+            this.angle += 360;
+        if (this.angle > 360)
+            this.angle -= 360;
     }
     OnKeyPress(e) {
         e.preventDefault();
