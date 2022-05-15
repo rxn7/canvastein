@@ -11,10 +11,14 @@ export class Color {
 		this.a = a;
 	}
 
-	public Mul(val: number, mulAlpha: boolean = false) {
+	public Mul(val: number, mulAlpha: boolean = false): void {
 		this.r *= val;
 		this.g *= val;
 		this.b *= val;
 		mulAlpha && (this.a *= val);
+	}
+
+	public Equals(other: Color): boolean {
+		return this.r == other.r && this.g == other.g && this.b == other.b;
 	}
 }

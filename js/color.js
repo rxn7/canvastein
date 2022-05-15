@@ -15,4 +15,7 @@ export class Color {
         this.b *= val;
         mulAlpha && (this.a *= val);
     }
+    Equals(other) {
+        return this.r == other.r && this.g == other.g && this.b == other.b;
+    }
 }

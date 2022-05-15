@@ -22,27 +22,27 @@ export class Canvastein {
 	];
 
 	constructor() {
-		Renderer.Init();
+		Renderer.Init(Renderer.RenderingApiType.WebGL);
 		Renderer.SetCanvasSize(window.innerWidth, window.innerHeight);
 		this.player = new Player(new Vector2(this.map[0].length/2, this.map.length/2), 0);
 		this.frameDelta = 0;
 		this.lastTimeStamp = 0;
 	}
 
-	public Run(): void {
-		window.requestAnimationFrame(this.GameLoop.bind(this));
+	public async Run() {
 		this.StartUpdateTitleTask();
+		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
 	private async StartUpdateTitleTask() {
-		while (true) {
+		while(true) {
 			await new Promise(resolve => setTimeout(resolve, 500));
 			document.title = `Canvastein | FPS: ${Math.round(1/this.frameDelta)}`;
 		}
 	}
 
-	private GameLoop(timeStamp: DOMHighResTimeStamp): void {
-		this.frameDelta = this.lastTimeStamp != 0 ? (timeStamp - this.lastTimeStamp) / 1000 : 1 / 60;
+	private GameLoop(now: DOMHighResTimeStamp): void {
+		this.frameDelta = this.lastTimeStamp != 0 ? (now - this.lastTimeStamp) / 1000 : 1 / 60;
 
 		this.player.Update(this, this.frameDelta);
 
@@ -50,7 +50,7 @@ export class Canvastein {
 		this.DrawWorld();
 		Renderer.EndFrame();
 
-		this.lastTimeStamp = timeStamp;
+		this.lastTimeStamp = now;
 		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
@@ -119,16 +119,14 @@ export class Canvastein {
 			let wallHeight: number = 0.5 / wallDistance;
 			let fromColor: Color = new Color(0.9, 0.9, 0.9);
 			let toColor: Color = new Color(0.95, 0.95, 0.95);
-			const skyColor: Color = new Color(0.1, 0.1, 0.8);
 
 			if(side == 1) {
 				fromColor.Mul(0.9);
 				toColor.Mul(0.9);
 			}
 
-			Renderer.AddLine(new Vector2(interpolationCoefficient, 1), new Vector2(interpolationCoefficient, wallHeight), skyColor, skyColor);
-			Renderer.AddLine(new Vector2(interpolationCoefficient, wallHeight), new Vector2(interpolationCoefficient, -wallHeight), fromColor, toColor);
-			Renderer.AddLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight), new Color(0.4, 0.4, 0.4), new Color(0.2, 0.2, 0.2));
+			Renderer.DrawLine(new Vector2(interpolationCoefficient, wallHeight), new Vector2(interpolationCoefficient, -wallHeight), fromColor, toColor);
+			Renderer.DrawLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight), new Color(0.4, 0.4, 0.4), new Color(0.2, 0.2, 0.2));
 		}
 	}
 }
