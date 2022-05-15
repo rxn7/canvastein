@@ -68,7 +68,6 @@ export class Player {
 		this.yaw += yaw;
 		if(this.yaw < 0) this.yaw += 360;
 		if(this.yaw > 360) this.yaw -= 360;
-		console.log(this.yaw);
 
 		this.pitch += pitch;
 		if(this.pitch > 90) this.pitch = 90;
