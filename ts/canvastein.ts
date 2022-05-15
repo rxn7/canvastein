@@ -24,7 +24,6 @@ export class Canvastein {
 
 	constructor() {
 		Renderer.Init(Renderer.RenderingApiType.WebGL);
-		Renderer.SetSize(window.innerWidth, window.innerHeight);
 		Renderer.guiCanvas.addEventListener('click', () => Renderer.canvas.requestPointerLock());
 		this.player = new Player(new Vector2(this.map[0].length/2, this.map.length/2), 0);
 		this.frameDelta = 0;
@@ -46,7 +45,9 @@ export class Canvastein {
 		while(true) {
 			await new Promise(resolve => setTimeout(resolve, 200));
 			Renderer.ClearGui();
-			Renderer.DrawText(`FPS: ${Math.round(1/this.frameDelta)}`);
+			Renderer.DrawGuiText(`FPS: ${Math.round(1/this.frameDelta)}`);
+			Renderer.DrawGuiText(`Renderer: ${Renderer.RenderingApiType[Renderer.apiType]}`, new Vector2(0, 60));
+			this.DrawCrosshar();
 		}
 	}
 
@@ -71,10 +72,15 @@ export class Canvastein {
 		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
+	private DrawCrosshar(): void {
+		const color: Color = Color.Black();
+		Renderer.DrawGuiLine(new Vector2(Renderer.halfWidth - 20, Renderer.halfHeight), new Vector2(Renderer.halfWidth + 20, Renderer.halfHeight), 5, color);
+		Renderer.DrawGuiLine(new Vector2(Renderer.halfWidth, Renderer.halfHeight - 20), new Vector2(Renderer.halfWidth, Renderer.halfHeight + 20), 5, color);
+	}
+
 	private DrawWorld(): void {
 		let rayCount: number = Renderer.canvas.width;
 		if(Renderer.apiType == Renderer.RenderingApiType.Canvas2D) rayCount /= 12; // Lower the quality if using Canvas2D renderer. Canvas2D renderer can't handle rendering that much lines.
-
 		const forwardDirection: Vector2 = new Vector2(Math.cos(Maths.Deg2Rad(this.player.yaw)), -Math.sin(Maths.Deg2Rad(this.player.yaw)));
 		const rightDirection: Vector2 = new Vector2(-forwardDirection.y, forwardDirection.x);
 		let rayPosition: Vector2 = this.player.position.Copy();

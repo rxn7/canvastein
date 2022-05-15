@@ -9,30 +9,30 @@ export const clearColor: Color = new Color(0,0,1);
 export let lineWidth: number = 1;
 export let apiType: RenderingApiType;
 export let guiCanvas: HTMLCanvasElement;
+export let halfHeight: number = 0;
+export let halfWidth: number = 0;
 let api: RenderingApi;
 let guiCtx: CanvasRenderingContext2D;
+const canvasContainer: HTMLDivElement = document.getElementById('canvas-container') as HTMLDivElement;
 
 export enum RenderingApiType {
 	WebGL,
 	Canvas2D
 };
 
-let halfHeight: number = 0;
-let halfWidth: number = 0;
 
 export function Init(_api: RenderingApiType) {
-
 	if(canvas) {
 		canvas.remove(); // Delete the previous canvas if it exists
 	}
 
 	canvas = document.createElement('canvas');
-	document.body.appendChild(canvas);
+	canvasContainer.appendChild(canvas);
 
 	if(!guiCanvas) {
 		guiCanvas = document.createElement('canvas');
 		guiCanvas.id = 'gui-canvas';
-		document.body.appendChild(guiCanvas);
+		canvasContainer.appendChild(guiCanvas);
 		guiCtx = guiCanvas.getContext('2d') as CanvasRenderingContext2D;
 	}
 
@@ -53,23 +53,28 @@ export function Init(_api: RenderingApiType) {
 			break;
 	}
 
-	if(!api.HasInitialized()){
-		alert("Failed to initialize the rendering api!");
-		return;
-	}
-
-	SetSize(window.innerWidth, window.innerHeight);
+	SetSize(window.innerWidth, window.innerWidth * 9/16);
 }
 
 export function DrawLine(from: Vector2, to: Vector2, fromColor: Color, toColor: Color): void {
 	api.DrawLine(from, to, fromColor, toColor);
 }
 
-export function DrawText(text: string, position: Vector2 = Vector2.Zero(), color: Color = new Color(0,0,0), align: CanvasTextAlign = 'left', baseLine: CanvasTextBaseline = 'top', fontSize: number = 50, font: string = 'monospace') {
+export function DrawGuiLine(from: Vector2, to: Vector2, width: number, color: Color) {
+	guiCtx.beginPath();
+	guiCtx.moveTo(from.x, from.y);
+	guiCtx.lineTo(to.x, to.y);
+	guiCtx.strokeStyle = color.ToHtmlString();
+	guiCtx.lineWidth = width;
+	guiCtx.stroke();
+	guiCtx.closePath();
+}
+
+export function DrawGuiText(text: string, position: Vector2 = Vector2.Zero(), color: Color = new Color(0,0,0), align: CanvasTextAlign = 'left', baseLine: CanvasTextBaseline = 'top', fontSize: number = 50, font: string = 'monospace') {
 	guiCtx.beginPath();
 	guiCtx.textAlign = align;
 	guiCtx.textBaseline = baseLine;
-	guiCtx.font = `$${fontSize}px ${font}`;
+	guiCtx.font = `${fontSize}px ${font}`;
 	guiCtx.fillStyle = color.ToHtmlString();
 	guiCtx.fillText(text, position.x, position.y);
 	guiCtx.closePath();
@@ -90,8 +95,8 @@ export function EndFrame(): void {
 export function SetSize(width: number = 1920, height: number = 1080): void {
 	canvas.width = width;
 	canvas.height = height;
-	guiCanvas.width = width / 2;
-	guiCanvas.height = height / 2;
+	guiCanvas.width = width;
+	guiCanvas.height = height;
 
 	halfWidth = width / 2;
 	halfHeight = height / 2;
@@ -104,10 +109,5 @@ export function SetLineWidth(width: number) {
 }
 
 window.addEventListener('resize', () => {
-	SetSize(window.innerWidth, window.innerHeight);
+	SetSize(window.innerWidth, window.innerWidth * 9/16);
 });
-
-export function GetHalfWidth(): number { return halfWidth; }
-export function GetHalfHeight(): number { return halfHeight; }
-export function GetWidth(): number { return canvas.width; }
-export function GetHeight(): number { return canvas.height; }

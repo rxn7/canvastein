@@ -28,7 +28,6 @@ export class Canvastein {
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
         Renderer.Init(Renderer.RenderingApiType.WebGL);
-        Renderer.SetSize(window.innerWidth, window.innerHeight);
         Renderer.guiCanvas.addEventListener('click', () => Renderer.canvas.requestPointerLock());
         this.player = new Player(new Vector2(this.map[0].length / 2, this.map.length / 2), 0);
         this.frameDelta = 0;
@@ -50,7 +49,9 @@ export class Canvastein {
             while (true) {
                 yield new Promise(resolve => setTimeout(resolve, 200));
                 Renderer.ClearGui();
-                Renderer.DrawText(`FPS: ${Math.round(1 / this.frameDelta)}`);
+                Renderer.DrawGuiText(`FPS: ${Math.round(1 / this.frameDelta)}`);
+                Renderer.DrawGuiText(`Renderer: ${Renderer.RenderingApiType[Renderer.apiType]}`, new Vector2(0, 60));
+                this.DrawCrosshar();
             }
         });
     }
@@ -71,6 +72,11 @@ export class Canvastein {
         Renderer.EndFrame();
         this.lastTimeStamp = now;
         window.requestAnimationFrame(this.GameLoop.bind(this));
+    }
+    DrawCrosshar() {
+        const color = Color.Black();
+        Renderer.DrawGuiLine(new Vector2(Renderer.halfWidth - 20, Renderer.halfHeight), new Vector2(Renderer.halfWidth + 20, Renderer.halfHeight), 5, color);
+        Renderer.DrawGuiLine(new Vector2(Renderer.halfWidth, Renderer.halfHeight - 20), new Vector2(Renderer.halfWidth, Renderer.halfHeight + 20), 5, color);
     }
     DrawWorld() {
         let rayCount = Renderer.canvas.width;
