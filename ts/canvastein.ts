@@ -119,12 +119,14 @@ export class Canvastein {
 			let wallHeight: number = 0.5 / wallDistance;
 			let fromColor: Color = new Color(0.9, 0.9, 0.9);
 			let toColor: Color = new Color(0.95, 0.95, 0.95);
+			const skyColor: Color = new Color(0.1, 0.1, 0.8);
 
 			if(side == 1) {
 				fromColor.Mul(0.9);
 				toColor.Mul(0.9);
 			}
 
+			Renderer.AddLine(new Vector2(interpolationCoefficient, 1), new Vector2(interpolationCoefficient, wallHeight), skyColor, skyColor);
 			Renderer.AddLine(new Vector2(interpolationCoefficient, wallHeight), new Vector2(interpolationCoefficient, -wallHeight), fromColor, toColor);
 			Renderer.AddLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight), new Color(0.4, 0.4, 0.4), new Color(0.2, 0.2, 0.2));
 		}
