@@ -3,6 +3,9 @@ export class Vector2 {
         this.x = x;
         this.y = y;
     }
+    static Zero() {
+        return new Vector2(0, 0);
+    }
     Copy() {
         return new Vector2(this.x, this.y);
     }

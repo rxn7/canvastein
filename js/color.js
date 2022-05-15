@@ -18,4 +18,8 @@ export class Color {
     Equals(other) {
         return this.r == other.r && this.g == other.g && this.b == other.b;
     }
+    ToHtmlString() {
+        return `rgb(${Math.floor(this.r * 255)},${Math.floor(this.g * 255)},${Math.floor(this.b * 255)})`;
+    }
+    static Black() { return new Color(0, 0, 0); }
 }

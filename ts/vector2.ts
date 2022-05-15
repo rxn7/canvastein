@@ -7,6 +7,10 @@ export class Vector2 {
 		this.y = y;
 	}
 
+	public static Zero(): Vector2 {
+		return new Vector2(0,0);
+	}
+
 	public Copy(): Vector2 {
 		return new Vector2(this.x, this.y);
 	}

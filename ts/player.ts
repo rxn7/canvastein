@@ -7,39 +7,45 @@ export class Player {
 	public position: Vector2;
 	public angle: number;
 
-	private left: boolean;
-	private right: boolean;
-	private up: boolean;
-	private down: boolean;
+	private input = {
+		walkLeft: false,
+		walkRight: false,
+		walkForward: false,
+		walkBackward: false,
+		rotateLeft: false,
+		rotateRight: false,
+	};
 	private moveSpeed: number = 5;
 	private rotateSpeed: number = 200;
 
 	constructor(position: Vector2, angle: number) {
 		this.position = position;
 		this.angle = angle;
-		this.left = false;
-		this.right = false;
-		this.up = false;
-		this.down = false;
 
 		window.addEventListener('keypress', this.OnKeyPress.bind(this));
 		window.addEventListener('keyup', this.OnKeyUp.bind(this));
 	}
 
 	public Update(canvastein: Canvastein, frameDelta: number, ) {
-		if(this.left)	this.Rotate(this.rotateSpeed * frameDelta);
-		if(this.right)	this.Rotate(-this.rotateSpeed * frameDelta);
+		if(this.input.rotateLeft)	this.Rotate(this.rotateSpeed * frameDelta);
+		if(this.input.rotateRight)	this.Rotate(-this.rotateSpeed * frameDelta);
 
 		const angleRad: number = Maths.Deg2Rad(this.angle);
 
-		let moveDirection: Vector2 = new Vector2();
-		let moveDirectionMultiplier: number = 0;
+		let moveDirection: Vector2 = Vector2.Zero();
 
-		this.up && moveDirectionMultiplier++;
-		this.down && moveDirectionMultiplier--;
+		if(this.up) {
+			moveDirection.x += Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+			moveDirection.y += -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+		}
+		if(this.down) {
+			moveDirection.x -= Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+			moveDirection.y -= -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+		}
+		if(this.left) {
 
-		moveDirection.x = moveDirectionMultiplier * Math.cos(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
-		moveDirection.y = moveDirectionMultiplier * -Math.sin(Maths.Deg2Rad(this.angle)) * frameDelta * this.moveSpeed;
+		}
+
 
 		if((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
 			if(canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {

@@ -14,6 +14,7 @@ import { Vector2 } from './vector2.js';
 import { Color } from './color.js';
 export class Canvastein {
     constructor() {
+        this.changeApi = false;
         this.map = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
@@ -27,27 +28,42 @@ export class Canvastein {
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
         Renderer.Init(Renderer.RenderingApiType.WebGL);
-        Renderer.SetCanvasSize(window.innerWidth, window.innerHeight);
+        Renderer.SetSize(window.innerWidth, window.innerHeight);
         this.player = new Player(new Vector2(this.map[0].length / 2, this.map.length / 2), 0);
         this.frameDelta = 0;
         this.lastTimeStamp = 0;
+        window.addEventListener('keypress', (event) => {
+            if (event.key == 'p') {
+                this.changeApi = true;
+            }
+        });
     }
     Run() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.StartUpdateTitleTask();
+            this.StartUpdateGuiTask();
             window.requestAnimationFrame(this.GameLoop.bind(this));
         });
     }
-    StartUpdateTitleTask() {
+    StartUpdateGuiTask() {
         return __awaiter(this, void 0, void 0, function* () {
             while (true) {
-                yield new Promise(resolve => setTimeout(resolve, 500));
-                document.title = `Canvastein | FPS: ${Math.round(1 / this.frameDelta)}`;
+                yield new Promise(resolve => setTimeout(resolve, 200));
+                Renderer.ClearGui();
+                Renderer.DrawText(`FPS: ${Math.round(1 / this.frameDelta)}`);
             }
         });
     }
     GameLoop(now) {
         this.frameDelta = this.lastTimeStamp != 0 ? (now - this.lastTimeStamp) / 1000 : 1 / 60;
+        if (this.changeApi) {
+            if (Renderer.apiType == Renderer.RenderingApiType.Canvas2D) {
+                Renderer.Init(Renderer.RenderingApiType.WebGL);
+            }
+            else {
+                Renderer.Init(Renderer.RenderingApiType.Canvas2D);
+            }
+            this.changeApi = false;
+        }
         this.player.Update(this, this.frameDelta);
         Renderer.BeginFrame();
         this.DrawWorld();
@@ -56,10 +72,13 @@ export class Canvastein {
         window.requestAnimationFrame(this.GameLoop.bind(this));
     }
     DrawWorld() {
-        const rayCount = Renderer.canvas.width;
+        let rayCount = Renderer.canvas.width;
+        if (Renderer.apiType == Renderer.RenderingApiType.Canvas2D)
+            rayCount /= 12;
         const forwardDirection = new Vector2(Math.cos(Maths.Deg2Rad(this.player.angle)), -Math.sin(Maths.Deg2Rad(this.player.angle)));
         const rightDirection = new Vector2(-forwardDirection.y, forwardDirection.x);
         let rayPosition = this.player.position.Copy();
+        Renderer.SetLineWidth((Renderer.canvas.width / rayCount) + 2);
         for (let rayIndex = 0; rayIndex < rayCount; rayIndex++) {
             const interpolationCoefficient = 2.0 * rayIndex / rayCount - 1.0;
             const rayDirection = new Vector2(forwardDirection.x + interpolationCoefficient * rightDirection.x, forwardDirection.y + interpolationCoefficient * rightDirection.y);

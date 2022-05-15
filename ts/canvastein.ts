@@ -8,6 +8,7 @@ export class Canvastein {
 	private player: Player;
 	private lastTimeStamp: DOMHighResTimeStamp;
 	private frameDelta: number;
+	private changeApi: boolean = false;
 	public map: Array<Array<number>> = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 1, 1, 1, 1, 0, 1, 1, 1], 
@@ -23,26 +24,41 @@ export class Canvastein {
 
 	constructor() {
 		Renderer.Init(Renderer.RenderingApiType.WebGL);
-		Renderer.SetCanvasSize(window.innerWidth, window.innerHeight);
+		Renderer.SetSize(window.innerWidth, window.innerHeight);
 		this.player = new Player(new Vector2(this.map[0].length/2, this.map.length/2), 0);
 		this.frameDelta = 0;
 		this.lastTimeStamp = 0;
+
+		window.addEventListener('keypress', (event: KeyboardEvent) => {
+			if(event.key == 'p') {
+				this.changeApi = true;
+			}
+		});
 	}
 
 	public async Run() {
-		this.StartUpdateTitleTask();
+		this.StartUpdateGuiTask();
 		window.requestAnimationFrame(this.GameLoop.bind(this));
 	}
 
-	private async StartUpdateTitleTask() {
+	private async StartUpdateGuiTask() {
 		while(true) {
-			await new Promise(resolve => setTimeout(resolve, 500));
-			document.title = `Canvastein | FPS: ${Math.round(1/this.frameDelta)}`;
+			await new Promise(resolve => setTimeout(resolve, 200));
+			Renderer.ClearGui();
+			Renderer.DrawText(`FPS: ${Math.round(1/this.frameDelta)}`);
 		}
 	}
 
 	private GameLoop(now: DOMHighResTimeStamp): void {
 		this.frameDelta = this.lastTimeStamp != 0 ? (now - this.lastTimeStamp) / 1000 : 1 / 60;
+		if(this.changeApi) {
+			if(Renderer.apiType == Renderer.RenderingApiType.Canvas2D) {
+				Renderer.Init(Renderer.RenderingApiType.WebGL);
+			} else {
+				Renderer.Init(Renderer.RenderingApiType.Canvas2D);
+			}
+			this.changeApi = false;
+		}
 
 		this.player.Update(this, this.frameDelta);
 
@@ -55,11 +71,14 @@ export class Canvastein {
 	}
 
 	private DrawWorld(): void {
-		const rayCount: number = Renderer.canvas.width;
+		let rayCount: number = Renderer.canvas.width;
+		if(Renderer.apiType == Renderer.RenderingApiType.Canvas2D) rayCount /= 12; // Lower the quality if using Canvas2D renderer. Canvas2D renderer can't handle rendering that much lines.
+
 		const forwardDirection: Vector2 = new Vector2(Math.cos(Maths.Deg2Rad(this.player.angle)), -Math.sin(Maths.Deg2Rad(this.player.angle)));
 		const rightDirection: Vector2 = new Vector2(-forwardDirection.y, forwardDirection.x);
 		let rayPosition: Vector2 = this.player.position.Copy();
 
+		Renderer.SetLineWidth((Renderer.canvas.width / rayCount) + 2);
 		for(let rayIndex: number = 0; rayIndex<rayCount; rayIndex++) {
 			const interpolationCoefficient = 2.0 * rayIndex / rayCount - 1.0;
 			const rayDirection: Vector2 = new Vector2(forwardDirection.x + interpolationCoefficient * rightDirection.x, forwardDirection.y + interpolationCoefficient * rightDirection.y);
