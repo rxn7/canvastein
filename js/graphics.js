@@ -75,9 +75,9 @@ export function DrawGuiText(text, position = Vector2.Zero(), color = new Color(0
 export function ClearGui() {
     guiCtx.clearRect(0, 0, guiCanvas.width, guiCanvas.height);
 }
-export function BeginFrame() {
+export function BeginFrame(player) {
     scaleRatio = guiCanvas.width / 1920;
-    renderer.BeginFrame();
+    renderer.BeginFrame(player);
 }
 export function EndFrame() {
     renderer.EndFrame();

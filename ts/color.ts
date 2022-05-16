@@ -1,3 +1,5 @@
+import * as Maths from './maths.js';
+
 export class Color {
 	public r: number = 0;
 	public g: number = 0;
@@ -11,11 +13,8 @@ export class Color {
 		this.a = a;
 	}
 
-	public Mul(val: number, mulAlpha: boolean = false): void {
-		this.r *= val;
-		this.g *= val;
-		this.b *= val;
-		mulAlpha && (this.a *= val);
+	public Mul(v: number, mulAlpha: boolean = false): Color {
+		return new Color(this.r * v, this.g * v, this.b * v, (mulAlpha && (this.a * v)) || (this.a));
 	}
 
 	public Equals(other: Color): boolean {
@@ -24,6 +23,10 @@ export class Color {
 
 	public ToHtmlString(): string {
 		return `rgb(${Math.floor(this.r*255)},${Math.floor(this.g*255)},${Math.floor(this.b*255)})`;
+	}
+
+	public Mix(other: Color, factor: number): Color {
+		return new Color(Maths.Lerp(this.r, other.r, factor), Maths.Lerp(this.g, other.g, factor), Maths.Lerp(this.b, other.b, factor));
 	}
 
 	public static Black(): Color { return new Color(0, 0, 0); }

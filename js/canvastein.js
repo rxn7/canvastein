@@ -12,9 +12,16 @@ import * as Maths from './maths.js';
 import { Player } from './player.js';
 import { Vector2 } from './vector2.js';
 import { Color } from './color.js';
+const floorColorFrom = new Color(0.4, 0.4, 0.4);
+const floorColorTo = new Color(0.2, 0.2, 0.2);
+const wallColorFrom = new Color(0.8, 0.8, 0.8);
+const wallColorTo = new Color(0.6, 0.6, 0.6);
 export class Canvastein {
     constructor() {
         this.changeApi = false;
+        this.fovMultiplier = 1.6;
+        this.fogNear = 8;
+        this.fogFar = 15;
         this.map = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
@@ -23,13 +30,34 @@ export class Canvastein {
             [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 1, 1, 0, 0, 1],
             [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 1, 1],
-            [1, 0, 0, 0, 1, 0, 1, 1, 1, 1],
+            [1, 0, 1, 0, 1, 0, 0, 0, 1, 1],
+            [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, -1, 0, 0, 0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
         Graphics.Init(Graphics.RendererEnum.WebGL);
         Graphics.guiCanvas.addEventListener('click', () => Graphics.canvas.requestPointerLock());
-        this.player = new Player(new Vector2(this.map[0].length / 2, this.map.length / 2), 0);
+        let playerStartPosition = new Vector2(1, 1);
+        for (let y = 0; y < this.map.length; ++y) {
+            for (let x = 0; x < this.map[0].length; ++x) {
+                if (this.map[y][x] == -1) {
+                    playerStartPosition.x = x;
+                    playerStartPosition.y = y;
+                }
+            }
+        }
+        this.player = new Player(playerStartPosition, 90);
         this.frameDelta = 0;
         this.lastTimeStamp = 0;
         window.addEventListener('keypress', (event) => {
@@ -51,7 +79,7 @@ export class Canvastein {
                 Graphics.ClearGui();
                 Graphics.DrawGuiText(`FPS: ${Math.round(1 / this.frameDelta)}`);
                 Graphics.DrawGuiText('Press \'P\' to change renderer', new Vector2(Graphics.canvas.width, 0), Color.Black(), 'right');
-                Graphics.DrawGuiText(`Graphics: ${Graphics.RendererEnum[Graphics.rendererEnum]}`, new Vector2(0, 60));
+                Graphics.DrawGuiText(`Renderer: ${Graphics.RendererEnum[Graphics.rendererEnum]}`, new Vector2(0, 60));
                 this.DrawCrosshar();
             }
         });
@@ -68,7 +96,7 @@ export class Canvastein {
             this.changeApi = false;
         }
         this.player.Update(this, this.frameDelta);
-        Graphics.BeginFrame();
+        Graphics.BeginFrame(this.player);
         this.DrawWorld();
         Graphics.EndFrame();
         this.lastTimeStamp = now;
@@ -83,7 +111,7 @@ export class Canvastein {
     DrawWorld() {
         let rayCount = Graphics.canvas.width;
         if (Graphics.rendererEnum == Graphics.RendererEnum.Canvas2D)
-            rayCount /= 12;
+            rayCount *= 0.5;
         const forwardDirection = new Vector2(Math.cos(Maths.Deg2Rad(this.player.yaw)), -Math.sin(Maths.Deg2Rad(this.player.yaw)));
         const rightDirection = new Vector2(-forwardDirection.y, forwardDirection.x);
         let rayPosition = this.player.position.Copy();
@@ -91,24 +119,20 @@ export class Canvastein {
         Graphics.SetLineWidth((Graphics.canvas.width / rayCount) + 2);
         for (let rayIndex = 0; rayIndex < rayCount; rayIndex++) {
             const interpolationCoefficient = 2.0 * rayIndex / rayCount - 1.0;
-            const rayDirection = new Vector2(forwardDirection.x + interpolationCoefficient * rightDirection.x, forwardDirection.y + interpolationCoefficient * rightDirection.y);
+            const rayDirection = new Vector2(forwardDirection.x + interpolationCoefficient * this.fovMultiplier * rightDirection.x, forwardDirection.y + interpolationCoefficient * this.fovMultiplier * rightDirection.y);
             const mapPosition = new Vector2(Math.floor(rayPosition.x), Math.floor(rayPosition.y));
             let deltaDist = new Vector2();
             let sideDist = new Vector2();
             let step = new Vector2();
             let side = 0;
-            if (Math.abs(rayDirection.x) < 1e-8) {
+            if (Math.abs(rayDirection.x) < 1e-8)
                 deltaDist.x = 1e8;
-            }
-            else {
+            else
                 deltaDist.x = Math.abs(1 / rayDirection.x);
-            }
-            if (Math.abs(rayDirection.y) < 1e-8) {
+            if (Math.abs(rayDirection.y) < 1e-8)
                 deltaDist.y = 1e8;
-            }
-            else {
+            else
                 deltaDist.y = Math.abs(1 / rayDirection.y);
-            }
             if (rayDirection.x < 0) {
                 step.x = -1;
                 sideDist.x = (rayPosition.x - mapPosition.x) * deltaDist.x;
@@ -126,7 +150,7 @@ export class Canvastein {
                 sideDist.y = (mapPosition.y + 1 - rayPosition.y) * deltaDist.y;
             }
             let hit = 0;
-            while (hit == 0) {
+            while (hit <= 0) {
                 if (sideDist.x < sideDist.y) {
                     sideDist.x += deltaDist.x;
                     mapPosition.x += step.x;
@@ -139,20 +163,27 @@ export class Canvastein {
                 }
                 hit = this.map[mapPosition.y][mapPosition.x];
             }
-            let wallDistance = 0;
-            if (side == 0)
-                wallDistance = Math.abs(sideDist.x - deltaDist.x);
-            else
-                wallDistance = Math.abs(sideDist.y - deltaDist.y);
-            let wallHeight = 0.5 / wallDistance;
-            let fromColor = new Color(0.9, 0.9, 0.9);
-            let toColor = new Color(0.95, 0.95, 0.95);
-            if (side == 1) {
-                fromColor.Mul(0.9);
-                toColor.Mul(0.9);
+            if (hit > 0) {
+                let wallDistance = 0;
+                if (side == 0)
+                    wallDistance = Math.abs(sideDist.x - deltaDist.x);
+                else
+                    wallDistance = Math.abs(sideDist.y - deltaDist.y);
+                let wallHeight = 0.5 / wallDistance;
+                const fogFactor = 1 - ((this.fogFar - wallDistance) / (this.fogFar - this.fogNear));
+                let wallColorFromFinal = wallColorFrom;
+                let wallColorToFinal = wallColorTo;
+                if (side == 1) {
+                    wallColorFromFinal = wallColorFromFinal.Mul(0.9);
+                    wallColorToFinal = wallColorToFinal.Mul(0.9);
+                }
+                wallColorFromFinal = wallColorFromFinal.Mix(Graphics.clearColor, fogFactor);
+                wallColorToFinal = wallColorToFinal.Mix(Graphics.clearColor, fogFactor);
+                if (wallDistance < this.fogFar) {
+                    Graphics.DrawLine(new Vector2(interpolationCoefficient, wallHeight + playerPitch), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), wallColorFromFinal, wallColorToFinal);
+                }
+                Graphics.DrawLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), floorColorFrom, floorColorTo);
             }
-            Graphics.DrawLine(new Vector2(interpolationCoefficient, wallHeight + playerPitch), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), fromColor, toColor);
-            Graphics.DrawLine(new Vector2(interpolationCoefficient, -1), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), new Color(0.4, 0.4, 0.4), new Color(0.2, 0.2, 0.2));
         }
     }
 }

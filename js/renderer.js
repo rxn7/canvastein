@@ -1,5 +1,5 @@
 export class Renderer {
-    BeginFrame() { }
+    BeginFrame(_player) { }
     EndFrame() { }
     DrawLine(_from, _to, _fromColor, _toColor) { }
     OnResize(_width, _height) { }

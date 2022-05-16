@@ -6,34 +6,34 @@ import { Color } from '../color.js';
 
 export class WebGLRenderer extends Renderer {
 	private lines: Array<number> = [];
-	private lineBuffer?: WebGLBuffer;
-	private lineShader?: ShaderProgram;
+	private lineBuffer: WebGLBuffer = 0;
+	private lineShader: ShaderProgram;
 	private gl: WebGLRenderingContext;
 	private initialized: boolean;
 
 	constructor() {
 		super();
-		this.gl = canvas.getContext('webgl', {alpha: false, depth: false, desynchronized: true, antialias: true}) as WebGLRenderingContext;
+		this.gl = canvas.getContext('webgl') as WebGLRenderingContext;
 		if(!this.gl) {
 			this.initialized = false;
 			alert('Your platform doesn\'t support WebGL');
-			return;
 		}
+
 		const lineVertShaderSource: string =
 			'precision mediump float;' +
 			'attribute vec2 aPosition;' +
 			'attribute vec3 aColor;' +
-			'varying vec3 fragColor;' +
+			'varying vec4 fragColor;' +
 			'void main() {' +
-			'	fragColor = aColor;' +
+			'	fragColor = vec4(aColor, 1.0);' +
 			'	gl_Position = vec4(aPosition, 0.0, 1.0);' +
 			'}';
 
 		const lineFragShaderSource: string =
 			'precision mediump float;' +
-			'varying vec3 fragColor;' +
+			'varying vec4 fragColor;' +
 			'void main() {' +
-			'	gl_FragColor = vec4(fragColor, 1.0);' +
+			'	gl_FragColor = fragColor;' +
 			'}';
 
 		this.lines = new Array<number>();

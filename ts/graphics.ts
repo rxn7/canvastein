@@ -3,6 +3,7 @@ import { Color } from './color.js';
 import { Renderer } from './renderer.js';
 import { WebGLRenderer } from './renderers/webgl_renderer.js';
 import { Canvas2dRenderer } from './renderers/canvas2d_renderer.js';
+import { Player } from './player.js';
 
 export let canvas: HTMLCanvasElement;
 export const clearColor: Color = new Color(0,0,1);
@@ -87,9 +88,9 @@ export function ClearGui() {
 	guiCtx.clearRect(0, 0, guiCanvas.width, guiCanvas.height);
 }
 
-export function BeginFrame(): void {
+export function BeginFrame(player: Player): void {
 	scaleRatio = guiCanvas.width / 1920;
-	renderer.BeginFrame();
+	renderer.BeginFrame(player);
 }
 
 export function EndFrame(): void {
