@@ -46,6 +46,7 @@ export class Canvastein {
 			await new Promise(resolve => setTimeout(resolve, 200));
 			Renderer.ClearGui();
 			Renderer.DrawGuiText(`FPS: ${Math.round(1/this.frameDelta)}`);
+			Renderer.DrawGuiText('Press \'P\' to change renderer', new Vector2(Renderer.canvas.width, 0), Color.Black(), 'right');
 			Renderer.DrawGuiText(`Renderer: ${Renderer.RenderingApiType[Renderer.apiType]}`, new Vector2(0, 60));
 			this.DrawCrosshar();
 		}
