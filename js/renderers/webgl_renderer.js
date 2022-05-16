@@ -6,35 +6,37 @@ export class WebGLRenderer extends Renderer {
         super();
         this.lines = [];
         this.lineBuffer = 0;
+        this.initialized = true;
         this.gl = canvas.getContext('webgl');
         if (!this.gl) {
             this.initialized = false;
             alert('Your platform doesn\'t support WebGL');
         }
-        const lineVertShaderSource = 'precision mediump float;' +
-            'attribute vec2 aPosition;' +
-            'attribute vec3 aColor;' +
-            'varying vec4 fragColor;' +
-            'void main() {' +
-            '	fragColor = vec4(aColor, 1.0);' +
-            '	gl_Position = vec4(aPosition, 0.0, 1.0);' +
-            '}';
-        const lineFragShaderSource = 'precision mediump float;' +
-            'varying vec4 fragColor;' +
-            'void main() {' +
-            '	gl_FragColor = fragColor;' +
-            '}';
-        this.lines = new Array();
-        this.lineBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.lineBuffer);
-        this.gl.enableVertexAttribArray(0);
-        this.gl.enableVertexAttribArray(1);
-        this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-        this.gl.vertexAttribPointer(1, 3, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-        this.gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-        this.gl.lineWidth(1);
-        this.lineShader = new ShaderProgram(this.gl, lineVertShaderSource, lineFragShaderSource);
-        this.initialized = true;
+        if (this.initialized) {
+            const lineVertShaderSource = 'precision mediump float;' +
+                'attribute vec2 aPosition;' +
+                'attribute vec3 aColor;' +
+                'varying vec4 fragColor;' +
+                'void main() {' +
+                '	fragColor = vec4(aColor, 1.0);' +
+                '	gl_Position = vec4(aPosition, 0.0, 1.0);' +
+                '}';
+            const lineFragShaderSource = 'precision mediump float;' +
+                'varying vec4 fragColor;' +
+                'void main() {' +
+                '	gl_FragColor = fragColor;' +
+                '}';
+            this.lines = new Array();
+            this.lineBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.lineBuffer);
+            this.gl.enableVertexAttribArray(0);
+            this.gl.enableVertexAttribArray(1);
+            this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+            this.gl.vertexAttribPointer(1, 3, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+            this.gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+            this.gl.lineWidth(1);
+            this.lineShader = new ShaderProgram(this.gl, lineVertShaderSource, lineFragShaderSource);
+        }
     }
     HasInitialized() {
         return this.initialized;
