@@ -10,6 +10,7 @@ export let guiCanvas;
 export let halfHeight = 0;
 export let halfWidth = 0;
 export let scaleRatio;
+export let guiEnabled = true;
 let renderer;
 let guiCtx;
 const canvasContainer = document.getElementById('canvas-container');
@@ -76,6 +77,7 @@ export function ClearGui() {
     guiCtx.clearRect(0, 0, guiCanvas.width, guiCanvas.height);
 }
 export function BeginFrame(player) {
+    guiCanvas.style.visibility = guiEnabled ? "visible" : "hidden";
     scaleRatio = guiCanvas.width / 1920;
     renderer.BeginFrame(player);
 }
@@ -93,6 +95,9 @@ export function SetSize(width = 1920, height = 1080) {
 }
 export function SetLineWidth(width) {
     lineWidth = width;
+}
+export function SetGuiEnabled(v) {
+    guiEnabled = v;
 }
 window.addEventListener('resize', () => {
     SetSize(window.innerWidth, window.innerWidth * 9 / 16);

@@ -52,13 +52,13 @@ export class Player {
 		moveDirection = moveDirection.Normalized().Mul(frameDelta * this.moveSpeed);
 
 		if((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
-			if(canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {
+			if(canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] <= 0) {
 				this.position.x += moveDirection.x;
 			}
 		}
 
 		if((Math.floor(this.position.y + moveDirection.y) >= 0) && (Math.floor(this.position.y + moveDirection.y) < canvastein.map.length)) {
-			if(canvastein.map[Math.floor(this.position.y + moveDirection.y)][Math.floor(this.position.x)] == 0) {
+			if(canvastein.map[Math.floor(this.position.y + moveDirection.y)][Math.floor(this.position.x)] <= 0) {
 				this.position.y += moveDirection.y;
 			}
 		}

@@ -22,6 +22,7 @@ export class Canvastein {
         this.fovMultiplier = 1.6;
         this.fogNear = 8;
         this.fogFar = 15;
+        this.fogEnabled = true;
         this.map = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
@@ -61,8 +62,16 @@ export class Canvastein {
         this.frameDelta = 0;
         this.lastTimeStamp = 0;
         window.addEventListener('keypress', (event) => {
-            if (event.key == 'p') {
-                this.changeApi = true;
+            switch (event.key) {
+                case 'p':
+                    this.changeApi = true;
+                    break;
+                case 'o':
+                    Graphics.SetGuiEnabled(!Graphics.guiEnabled);
+                    break;
+                case 'i':
+                    this.fogEnabled = !this.fogEnabled;
+                    break;
             }
         });
     }
@@ -78,8 +87,11 @@ export class Canvastein {
                 yield new Promise(resolve => setTimeout(resolve, 200));
                 Graphics.ClearGui();
                 Graphics.DrawGuiText(`FPS: ${Math.round(1 / this.frameDelta)}`);
-                Graphics.DrawGuiText('Press \'P\' to change renderer', new Vector2(Graphics.canvas.width, 0), Color.Black(), 'right');
                 Graphics.DrawGuiText(`Renderer: ${Graphics.RendererEnum[Graphics.rendererEnum]}`, new Vector2(0, 60));
+                Graphics.DrawGuiText(`Fog: ${this.fogEnabled}`, new Vector2(0, 120));
+                Graphics.DrawGuiText('Press \'P\' to change renderer', new Vector2(Graphics.canvas.width, 0), Color.Black(), 'right');
+                Graphics.DrawGuiText('Press \'O\' to toggle GUI', new Vector2(Graphics.canvas.width, 60), Color.Black(), 'right');
+                Graphics.DrawGuiText('Press \'I\' to toggle fog', new Vector2(Graphics.canvas.width, 120), Color.Black(), 'right');
                 this.DrawCrosshar();
             }
         });
@@ -177,8 +189,10 @@ export class Canvastein {
                     wallColorFromFinal = wallColorFromFinal.Mul(0.9);
                     wallColorToFinal = wallColorToFinal.Mul(0.9);
                 }
-                wallColorFromFinal = wallColorFromFinal.Mix(Graphics.clearColor, fogFactor);
-                wallColorToFinal = wallColorToFinal.Mix(Graphics.clearColor, fogFactor);
+                if (this.fogEnabled) {
+                    wallColorFromFinal = wallColorFromFinal.Mix(Graphics.clearColor, fogFactor);
+                    wallColorToFinal = wallColorToFinal.Mix(Graphics.clearColor, fogFactor);
+                }
                 if (wallDistance < this.fogFar) {
                     Graphics.DrawLine(new Vector2(interpolationCoefficient, wallHeight + playerPitch), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), wallColorFromFinal, wallColorToFinal);
                 }

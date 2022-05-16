@@ -23,9 +23,3 @@ canvas{
 #gui-canvas{
 	z-index: 2 !important;
 }
-#resolution-slider{
-	position: absolute;
-	left: 0;
-	top: 0;
-	z-index: 10;
-}

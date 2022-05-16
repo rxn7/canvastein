@@ -17,6 +17,7 @@ export class Canvastein {
 	private fovMultiplier: number = 1.6;
 	private fogNear: number = 8;
 	private fogFar: number = 15;
+	private fogEnabled: boolean = true;
 
 	public map: Array<Array<number>> = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -61,8 +62,18 @@ export class Canvastein {
 		this.lastTimeStamp = 0;
 
 		window.addEventListener('keypress', (event: KeyboardEvent) => {
-			if(event.key == 'p') {
-				this.changeApi = true;
+			switch(event.key) {
+				case 'p':
+					this.changeApi = true;
+					break;
+
+				case 'o':
+					Graphics.SetGuiEnabled(!Graphics.guiEnabled);
+					break;
+
+				case 'i':
+					this.fogEnabled = !this.fogEnabled;
+					break;
 			}
 		});
 	}
@@ -77,8 +88,12 @@ export class Canvastein {
 			await new Promise(resolve => setTimeout(resolve, 200));
 			Graphics.ClearGui();
 			Graphics.DrawGuiText(`FPS: ${Math.round(1/this.frameDelta)}`);
-			Graphics.DrawGuiText('Press \'P\' to change renderer', new Vector2(Graphics.canvas.width, 0), Color.Black(), 'right');
 			Graphics.DrawGuiText(`Renderer: ${Graphics.RendererEnum[Graphics.rendererEnum]}`, new Vector2(0, 60));
+			Graphics.DrawGuiText(`Fog: ${this.fogEnabled}`, new Vector2(0, 120));
+
+			Graphics.DrawGuiText('Press \'P\' to change renderer', new Vector2(Graphics.canvas.width, 0), Color.Black(), 'right');
+			Graphics.DrawGuiText('Press \'O\' to toggle GUI', new Vector2(Graphics.canvas.width, 60), Color.Black(), 'right');
+			Graphics.DrawGuiText('Press \'I\' to toggle fog', new Vector2(Graphics.canvas.width, 120), Color.Black(), 'right');
 			this.DrawCrosshar();
 		}
 	}
@@ -108,8 +123,7 @@ export class Canvastein {
 		const color: Color = Color.Black();
 		const distanceFromMiddle: number = 20 * Graphics.scaleRatio; 
 		Graphics.DrawGuiLine(new Vector2(Graphics.halfWidth - distanceFromMiddle, Graphics.halfHeight), new Vector2(Graphics.halfWidth + distanceFromMiddle, Graphics.halfHeight), 5, color);
-		Graphics.DrawGuiLine(new Vector2(Graphics.halfWidth, Graphics.halfHeight - distanceFromMiddle), new Vector2(Graphics.halfWidth, Graphics.halfHeight + distanceFromMiddle), 5, color);
-	}
+		Graphics.DrawGuiLine(new Vector2(Graphics.halfWidth, Graphics.halfHeight - distanceFromMiddle), new Vector2(Graphics.halfWidth, Graphics.halfHeight + distanceFromMiddle), 5, color); }
 
 	private DrawWorld(): void {
 		let rayCount: number = Graphics.canvas.width;
@@ -183,8 +197,10 @@ export class Canvastein {
 					wallColorToFinal = wallColorToFinal.Mul(0.9);
 				}
 
-				wallColorFromFinal = wallColorFromFinal.Mix(Graphics.clearColor, fogFactor);
-				wallColorToFinal = wallColorToFinal.Mix(Graphics.clearColor, fogFactor);
+				if(this.fogEnabled) {
+					wallColorFromFinal = wallColorFromFinal.Mix(Graphics.clearColor, fogFactor);
+					wallColorToFinal = wallColorToFinal.Mix(Graphics.clearColor, fogFactor);
+				}
 
 				if(wallDistance < this.fogFar) { // Render the wall only if it's visible
 					Graphics.DrawLine(new Vector2(interpolationCoefficient, wallHeight + playerPitch), new Vector2(interpolationCoefficient, -wallHeight + playerPitch), wallColorFromFinal, wallColorToFinal);
