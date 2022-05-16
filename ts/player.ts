@@ -49,7 +49,7 @@ export class Player {
 			moveDirection.y += Math.sin(yawRad + Math.PI/2);
 		}
 
-		moveDirection = moveDirection.Mul(frameDelta * this.moveSpeed);
+		moveDirection = moveDirection.Normalized().Mul(frameDelta * this.moveSpeed);
 
 		if((Math.floor(this.position.x + moveDirection.x) >= 0) && (Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length)) {
 			if(canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] == 0) {

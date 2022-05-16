@@ -28,13 +28,12 @@ export class Vector2 {
 	}
 
 	public GetLength(): number {
-		return Math.sqrt(this.x * this.x + this.y * this.y);
+		return Math.sqrt((this.x**2) + (this.y**2));
 	}
 
 	public Normalized(): Vector2 {
 		let len: number = this.GetLength();
-		let result: Vector2 = new Vector2(0,0);
-
+		let result: Vector2 = this.Copy();
 		if(len != 0) {
 			result.x /= len;
 			result.y /= len;

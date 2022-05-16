@@ -19,11 +19,11 @@ export class Vector2 {
         return new Vector2(this.x * val, this.y * val);
     }
     GetLength() {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
+        return Math.sqrt((Math.pow(this.x, 2)) + (Math.pow(this.y, 2)));
     }
     Normalized() {
         let len = this.GetLength();
-        let result = new Vector2(0, 0);
+        let result = this.Copy();
         if (len != 0) {
             result.x /= len;
             result.y /= len;
