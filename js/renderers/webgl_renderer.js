@@ -1,7 +1,7 @@
-import { RenderingApi } from './rendering_api.js';
-import { canvas, clearColor, lineWidth } from './renderer.js';
-import { ShaderProgram } from './shader.js';
-export class WebGLApi extends RenderingApi {
+import { Renderer } from '../renderer.js';
+import { canvas, clearColor, lineWidth } from '../graphics.js';
+import { ShaderProgram } from '../shader.js';
+export class WebGLRenderer extends Renderer {
     constructor() {
         super();
         this.lines = [];

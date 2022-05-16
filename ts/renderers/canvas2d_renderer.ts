@@ -1,9 +1,9 @@
-import { RenderingApi } from './rendering_api.js';
-import { canvas, lineWidth, clearColor } from './renderer.js';
-import { Vector2 } from './vector2.js';
-import { Color } from './color.js';
+import { Renderer } from '../renderer.js';
+import { canvas, lineWidth, clearColor } from '../graphics.js';
+import { Vector2 } from '../vector2.js';
+import { Color } from '../color.js';
 
-export class Canvas2dApi extends RenderingApi {
+export class Canvas2dRenderer extends Renderer {
 	private initialized: boolean;
 	private ctx: CanvasRenderingContext2D;
 

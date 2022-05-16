@@ -1,10 +1,10 @@
-import { RenderingApi } from './rendering_api.js';
-import { canvas, clearColor, lineWidth } from './renderer.js';
-import { ShaderProgram } from './shader.js';
-import { Vector2 } from './vector2.js';
-import { Color } from './color.js';
+import { Renderer } from '../renderer.js';
+import { canvas, clearColor, lineWidth } from '../graphics.js';
+import { ShaderProgram } from '../shader.js';
+import { Vector2 } from '../vector2.js';
+import { Color } from '../color.js';
 
-export class WebGLApi extends RenderingApi {
+export class WebGLRenderer extends Renderer {
 	private lines: Array<number> = [];
 	private lineBuffer?: WebGLBuffer;
 	private lineShader?: ShaderProgram;

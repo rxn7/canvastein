@@ -1,6 +1,6 @@
-import { RenderingApi } from './rendering_api.js';
-import { canvas, lineWidth, clearColor } from './renderer.js';
-export class Canvas2dApi extends RenderingApi {
+import { Renderer } from '../renderer.js';
+import { canvas, lineWidth, clearColor } from '../graphics.js';
+export class Canvas2dRenderer extends Renderer {
     constructor() {
         super();
         this.ctx = canvas.getContext('2d');
