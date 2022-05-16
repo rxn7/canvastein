@@ -5,7 +5,7 @@ import { Canvas2dRenderer } from './renderers/canvas2d_renderer.js';
 export let canvas;
 export const clearColor = new Color(0, 0, 1);
 export let lineWidth = 1;
-export let apiType;
+export let rendererEnum;
 export let guiCanvas;
 export let halfHeight = 0;
 export let halfWidth = 0;
@@ -13,11 +13,11 @@ export let scaleRatio;
 let renderer;
 let guiCtx;
 const canvasContainer = document.getElementById('canvas-container');
-export var RenderingApiType;
-(function (RenderingApiType) {
-    RenderingApiType[RenderingApiType["WebGL"] = 0] = "WebGL";
-    RenderingApiType[RenderingApiType["Canvas2D"] = 1] = "Canvas2D";
-})(RenderingApiType || (RenderingApiType = {}));
+export var RendererEnum;
+(function (RendererEnum) {
+    RendererEnum[RendererEnum["WebGL"] = 0] = "WebGL";
+    RendererEnum[RendererEnum["Canvas2D"] = 1] = "Canvas2D";
+})(RendererEnum || (RendererEnum = {}));
 ;
 export function Init(_api) {
     if (canvas) {
@@ -32,18 +32,18 @@ export function Init(_api) {
         guiCtx = guiCanvas.getContext('2d');
     }
     switch (_api) {
-        case RenderingApiType.WebGL:
+        case RendererEnum.WebGL:
             renderer = new WebGLRenderer();
-            apiType = RenderingApiType.WebGL;
+            rendererEnum = RendererEnum.WebGL;
             if (!renderer.HasInitialized()) {
                 alert('Falling back to Canvas2D renderer. This renderer is experimental and may look different than the WebGL version.');
                 renderer = new Canvas2dRenderer();
-                apiType = RenderingApiType.Canvas2D;
+                rendererEnum = RendererEnum.Canvas2D;
             }
             break;
-        case RenderingApiType.Canvas2D:
+        case RendererEnum.Canvas2D:
             renderer = new Canvas2dRenderer();
-            apiType = RenderingApiType.Canvas2D;
+            rendererEnum = RendererEnum.Canvas2D;
             break;
     }
     SetSize(window.innerWidth, window.innerWidth * 9 / 16);

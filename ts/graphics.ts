@@ -7,7 +7,7 @@ import { Canvas2dRenderer } from './renderers/canvas2d_renderer.js';
 export let canvas: HTMLCanvasElement;
 export const clearColor: Color = new Color(0,0,1);
 export let lineWidth: number = 1;
-export let apiType: RenderingApiType;
+export let rendererEnum: RendererEnum;
 export let guiCanvas: HTMLCanvasElement;
 export let halfHeight: number = 0;
 export let halfWidth: number = 0;
@@ -16,12 +16,12 @@ let renderer: Renderer;
 let guiCtx: CanvasRenderingContext2D;
 const canvasContainer: HTMLDivElement = document.getElementById('canvas-container') as HTMLDivElement;
 
-export enum RenderingApiType {
+export enum RendererEnum {
 	WebGL,
 	Canvas2D
 };
 
-export function Init(_api: RenderingApiType) {
+export function Init(_api: RendererEnum) {
 	if(canvas) {
 		canvas.remove(); // Delete the previous canvas if it exists
 	}
@@ -37,19 +37,19 @@ export function Init(_api: RenderingApiType) {
 	}
 
 	switch(_api) {
-		case RenderingApiType.WebGL:
+		case RendererEnum.WebGL:
 			renderer = new WebGLRenderer();
-			apiType = RenderingApiType.WebGL;
+			rendererEnum = RendererEnum.WebGL;
 			if(!renderer.HasInitialized()) {
 				alert('Falling back to Canvas2D renderer. This renderer is experimental and may look different than the WebGL version.');
 				renderer = new Canvas2dRenderer();
-				apiType = RenderingApiType.Canvas2D;
+				rendererEnum = RendererEnum.Canvas2D;
 			}
 			break;
 
-		case RenderingApiType.Canvas2D:
+		case RendererEnum.Canvas2D:
 			renderer = new Canvas2dRenderer();
-			apiType = RenderingApiType.Canvas2D;
+			rendererEnum = RendererEnum.Canvas2D;
 			break;
 	}
 

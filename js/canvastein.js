@@ -27,7 +27,7 @@ export class Canvastein {
             [1, 0, 0, 0, 1, 0, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
-        Graphics.Init(Graphics.RenderingApiType.WebGL);
+        Graphics.Init(Graphics.RendererEnum.WebGL);
         Graphics.guiCanvas.addEventListener('click', () => Graphics.canvas.requestPointerLock());
         this.player = new Player(new Vector2(this.map[0].length / 2, this.map.length / 2), 0);
         this.frameDelta = 0;
@@ -51,7 +51,7 @@ export class Canvastein {
                 Graphics.ClearGui();
                 Graphics.DrawGuiText(`FPS: ${Math.round(1 / this.frameDelta)}`);
                 Graphics.DrawGuiText('Press \'P\' to change renderer', new Vector2(Graphics.canvas.width, 0), Color.Black(), 'right');
-                Graphics.DrawGuiText(`Graphics: ${Graphics.RenderingApiType[Graphics.apiType]}`, new Vector2(0, 60));
+                Graphics.DrawGuiText(`Graphics: ${Graphics.RendererEnum[Graphics.rendererEnum]}`, new Vector2(0, 60));
                 this.DrawCrosshar();
             }
         });
@@ -59,11 +59,11 @@ export class Canvastein {
     GameLoop(now) {
         this.frameDelta = this.lastTimeStamp != 0 ? (now - this.lastTimeStamp) / 1000 : 1 / 60;
         if (this.changeApi) {
-            if (Graphics.apiType == Graphics.RenderingApiType.Canvas2D) {
-                Graphics.Init(Graphics.RenderingApiType.WebGL);
+            if (Graphics.rendererEnum == Graphics.RendererEnum.Canvas2D) {
+                Graphics.Init(Graphics.RendererEnum.WebGL);
             }
             else {
-                Graphics.Init(Graphics.RenderingApiType.Canvas2D);
+                Graphics.Init(Graphics.RendererEnum.Canvas2D);
             }
             this.changeApi = false;
         }
@@ -82,7 +82,7 @@ export class Canvastein {
     }
     DrawWorld() {
         let rayCount = Graphics.canvas.width;
-        if (Graphics.apiType == Graphics.RenderingApiType.Canvas2D)
+        if (Graphics.rendererEnum == Graphics.RendererEnum.Canvas2D)
             rayCount /= 12;
         const forwardDirection = new Vector2(Math.cos(Maths.Deg2Rad(this.player.yaw)), -Math.sin(Maths.Deg2Rad(this.player.yaw)));
         const rightDirection = new Vector2(-forwardDirection.y, forwardDirection.x);
