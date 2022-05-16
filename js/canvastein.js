@@ -47,7 +47,12 @@ export class Canvastein {
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
-        Graphics.Init(Graphics.RendererEnum.WebGL);
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) || (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.platform))) {
+            Graphics.Init(Graphics.RendererEnum.Canvas2D);
+        }
+        else {
+            Graphics.Init(Graphics.RendererEnum.WebGL);
+        }
         Graphics.guiCanvas.addEventListener('click', () => Graphics.canvas.requestPointerLock());
         let playerStartPosition = new Vector2(1, 1);
         for (let y = 0; y < this.map.length; ++y) {

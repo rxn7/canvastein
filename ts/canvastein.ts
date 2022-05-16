@@ -45,7 +45,13 @@ export class Canvastein {
 	];
 
 	constructor() {
-		Graphics.Init(Graphics.RendererEnum.WebGL);
+		// Use Canvas2D renderer on mobile devices
+		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) || (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.platform))) {
+			Graphics.Init(Graphics.RendererEnum.Canvas2D);
+		} else {
+			Graphics.Init(Graphics.RendererEnum.WebGL);
+		}
+
 		Graphics.guiCanvas.addEventListener('click', () => Graphics.canvas.requestPointerLock());
 		let playerStartPosition: Vector2 = new Vector2(1,1);
 		for(let y: number = 0; y<this.map.length; ++y) {
