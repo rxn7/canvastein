@@ -11,6 +11,7 @@ export class WebGLRenderer extends Renderer {
         if (!this.gl) {
             this.initialized = false;
             alert('Your platform doesn\'t support WebGL');
+            return;
         }
         if (this.initialized) {
             const lineVertShaderSource = 'precision mediump float;' +
