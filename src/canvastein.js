@@ -1,8 +1,8 @@
-import * as Graphics from './graphics.js';
-import * as Maths from './helpers/mathHelper.js';
 import { Player } from './player.js';
 import { Vector2 } from './vector2.js';
 import { Color } from './color.js';
+import { Graphics } from './graphics.js';
+import { deg2Rad } from './helpers/mathHelper.js';
 const floorColorFrom = new Color(0.4, 0.4, 0.4);
 const floorColorTo = new Color(0.2, 0.2, 0.2);
 const wallColorFrom = new Color(0.8, 0.8, 0.8);
@@ -113,13 +113,12 @@ export class Canvastein {
         Graphics.drawGuiLine(new Vector2(Graphics.halfWidth, Graphics.halfHeight - distanceFromMiddle), new Vector2(Graphics.halfWidth, Graphics.halfHeight + distanceFromMiddle), 5, color);
     }
     drawWorld() {
-        let rayCount = Graphics.canvas.width;
-        if (Graphics.rendererEnum == Graphics.RendererType.Canvas2D)
-            rayCount *= 0.1;
-        const forwardDirection = new Vector2(Math.cos(Maths.deg2Rad(this.player.yaw)), -Math.sin(Maths.deg2Rad(this.player.yaw)));
+        let rayCount = Graphics.canvas.width * Graphics.renderer.getRayCountMultiplier();
+        const playerHeadOffset = this.player.getHeadOffset();
+        const forwardDirection = new Vector2(Math.cos(deg2Rad(this.player.yaw) + playerHeadOffset.x), -Math.sin(deg2Rad(this.player.yaw) + playerHeadOffset.y));
         const rightDirection = new Vector2(-forwardDirection.y, forwardDirection.x);
         let rayPosition = this.player.position.copy();
-        const playerPitch = Maths.deg2Rad(this.player.pitch) * 2;
+        const playerPitch = deg2Rad(this.player.pitch) * 2 + playerHeadOffset.y;
         Graphics.setLineWidth(Graphics.canvas.width / rayCount + 2);
         for (let rayIndex = 0; rayIndex < rayCount; rayIndex++) {
             const interpolationCoefficient = (2.0 * rayIndex) / rayCount - 1.0;

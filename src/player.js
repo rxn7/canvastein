@@ -1,7 +1,11 @@
 import { Vector2 } from './vector2.js';
-import * as Maths from './helpers/mathHelper.js';
+import { deg2Rad, lerp } from './helpers/mathHelper.js';
+import { AudioHelper } from './helpers/audioHelper.js';
 export class Player {
     constructor(position, yaw) {
+        this.headBob = Vector2.Zero();
+        this.headBobTimer = 0;
+        this.headBobWasYPositive = false;
         this.input = {
             walkLeft: false,
             walkRight: false,
@@ -10,7 +14,7 @@ export class Player {
             rotateLeft: false,
             rotateRight: false,
         };
-        this.moveSpeed = 2;
+        this.getHeadOffset = () => this.headBob;
         this.position = position;
         this.yaw = yaw;
         this.pitch = 0;
@@ -19,7 +23,7 @@ export class Player {
         window.addEventListener('mousemove', this.onMouseMove.bind(this));
     }
     update(canvastein, frameDelta) {
-        const yawRad = Maths.deg2Rad(this.yaw);
+        const yawRad = deg2Rad(this.yaw);
         let moveDirection = Vector2.Zero();
         if (this.input.walkForward) {
             moveDirection.x += Math.cos(yawRad);
@@ -37,7 +41,8 @@ export class Player {
             moveDirection.x -= Math.cos(yawRad + Math.PI / 2);
             moveDirection.y += Math.sin(yawRad + Math.PI / 2);
         }
-        moveDirection = moveDirection.normalized().mul(frameDelta * this.moveSpeed);
+        moveDirection = moveDirection.normalized().mul(frameDelta * Player.moveSpeed);
+        this.calculateHeadBob(moveDirection, frameDelta);
         if (Math.floor(this.position.x + moveDirection.x) >= 0 && Math.floor(this.position.x + moveDirection.x) < canvastein.map[0].length) {
             if (canvastein.map[Math.floor(this.position.y)][Math.floor(this.position.x + moveDirection.x)] <= 0) {
                 this.position.x += moveDirection.x;
@@ -48,6 +53,20 @@ export class Player {
                 this.position.y += moveDirection.y;
             }
         }
+    }
+    calculateHeadBob(moveDirection, frameDelta) {
+        if (moveDirection.getLengthSqr() != 0) {
+            this.headBobTimer += frameDelta;
+        }
+        else {
+            this.headBobTimer = 0;
+        }
+        this.headBob.y = lerp(this.headBob.y, Math.cos(this.headBobTimer * Player.headBobSpeed) * Player.headBobVerticalAmplitude, 10 * frameDelta);
+        this.headBob.x = lerp(this.headBob.x, Math.sin(this.headBobTimer * Player.headBobSpeed * 0.5) * Player.headBobHorizontalAmplitude, 10 * frameDelta);
+        if (this.headBob.y < 0 && this.headBobWasYPositive) {
+            AudioHelper.playFootstep();
+        }
+        this.headBobWasYPositive = this.headBob.y >= 0;
     }
     rotate(yaw, pitch) {
         this.yaw += yaw;
@@ -99,3 +118,7 @@ export class Player {
         this.rotate(-e.movementX * 0.1, e.movementY * 0.1);
     }
 }
+Player.headBobSpeed = 15;
+Player.headBobVerticalAmplitude = 0.01;
+Player.headBobHorizontalAmplitude = 0.005;
+Player.moveSpeed = 2;

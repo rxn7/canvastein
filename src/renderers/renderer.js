@@ -1,8 +1,12 @@
 export class Renderer {
-    beginFrame(_player) { }
+    constructor(rayCountMultiplier) {
+        this.rayCountMultiplier = rayCountMultiplier;
+        this.getRayCountMultiplier = () => this.rayCountMultiplier;
+    }
+    beginFrame(player) { }
     endFrame() { }
-    drawLine(_from, _to, _fromColor, _toColor) { }
-    onResize(_width, _height) { }
+    drawLine(from, to, fromColor, toColor) { }
+    onResize(width, height) { }
     hasInitialized() {
         return false;
     }

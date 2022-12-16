@@ -18,6 +18,9 @@ export class Vector2 {
     getLength() {
         return Math.sqrt(this.x ** 2 + this.y ** 2);
     }
+    getLengthSqr() {
+        return this.x ** 2 + this.y ** 2;
+    }
     normalized() {
         let len = this.getLength();
         let result = this.copy();
