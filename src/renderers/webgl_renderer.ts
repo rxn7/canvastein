@@ -1,8 +1,8 @@
 import { Renderer } from './renderer.js'
-import { canvas, clearColor, lineWidth } from '../graphics.js'
 import { ShaderProgram } from '../shader.js'
 import { Vector2 } from '../vector2.js'
 import { Color } from '../color.js'
+import { Graphics } from '../graphics.js'
 
 export class WebGLRenderer extends Renderer {
 	private lines: Array<number> = []
@@ -12,9 +12,9 @@ export class WebGLRenderer extends Renderer {
 	private initialized: boolean
 
 	constructor() {
-		super()
+		super(1)
 		this.initialized = true
-		this.gl = canvas.getContext('webgl') as WebGLRenderingContext
+		this.gl = Graphics.canvas.getContext('webgl') as WebGLRenderingContext
 		if (!this.gl) {
 			this.initialized = false
 			alert("Your platform doesn't support WebGL")
@@ -33,7 +33,7 @@ export class WebGLRenderer extends Renderer {
 			this.gl.enableVertexAttribArray(1)
 			this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0) // aPosition
 			this.gl.vertexAttribPointer(1, 3, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT) // aColor
-			this.gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
+			this.gl.clearColor(Graphics.clearColor.r, Graphics.clearColor.g, Graphics.clearColor.b, Graphics.clearColor.a)
 			this.gl.lineWidth(1)
 			this.lineShader = new ShaderProgram(this.gl, lineVertShaderSource, lineFragShaderSource)
 		}
@@ -46,7 +46,7 @@ export class WebGLRenderer extends Renderer {
 	public override beginFrame(): void {
 		this.lines = []
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT)
-		this.gl.lineWidth(lineWidth)
+		this.gl.lineWidth(Graphics.lineWidth)
 	}
 
 	public override endFrame(): void {

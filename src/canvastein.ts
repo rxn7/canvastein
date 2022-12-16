@@ -1,8 +1,8 @@
-import * as Graphics from './graphics.js'
-import * as Maths from './helpers/mathHelper.js'
 import { Player } from './player.js'
 import { Vector2 } from './vector2.js'
 import { Color } from './color.js'
+import { Graphics } from './graphics.js'
+import { deg2Rad } from './helpers/mathHelper.js'
 
 const floorColorFrom: Color = new Color(0.4, 0.4, 0.4)
 const floorColorTo: Color = new Color(0.2, 0.2, 0.2)
@@ -122,6 +122,7 @@ export class Canvastein {
 		Graphics.endFrame()
 
 		this.lastTimeStamp = now
+
 		window.requestAnimationFrame(this.gameLoop.bind(this))
 	}
 
@@ -133,12 +134,13 @@ export class Canvastein {
 	}
 
 	private drawWorld(): void {
-		let rayCount: number = Graphics.canvas.width
-		if (Graphics.rendererEnum == Graphics.RendererType.Canvas2D) rayCount *= 0.1 // Lower the quality if using Canvas2D renderer. Canvas2D renderer can't handle rendering that much lines.
-		const forwardDirection: Vector2 = new Vector2(Math.cos(Maths.deg2Rad(this.player.yaw)), -Math.sin(Maths.deg2Rad(this.player.yaw)))
+		let rayCount: number = Graphics.canvas.width * Graphics.renderer.getRayCountMultiplier()
+
+		const playerHeadOffset: Vector2 = this.player.getHeadOffset()
+		const forwardDirection: Vector2 = new Vector2(Math.cos(deg2Rad(this.player.yaw) + playerHeadOffset.x), -Math.sin(deg2Rad(this.player.yaw) + playerHeadOffset.y))
 		const rightDirection: Vector2 = new Vector2(-forwardDirection.y, forwardDirection.x)
 		let rayPosition: Vector2 = this.player.position.copy()
-		const playerPitch: number = Maths.deg2Rad(this.player.pitch) * 2
+		const playerPitch: number = deg2Rad(this.player.pitch) * 2 + playerHeadOffset.y
 
 		Graphics.setLineWidth(Graphics.canvas.width / rayCount + 2)
 		for (let rayIndex: number = 0; rayIndex < rayCount; rayIndex++) {

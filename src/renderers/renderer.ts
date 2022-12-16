@@ -3,11 +3,15 @@ import { Color } from '../color.js'
 import { Player } from '../player.js'
 
 export class Renderer {
-	public beginFrame(_player: Player): void {}
+	protected constructor(protected rayCountMultiplier: number) {}
+
+	public beginFrame(player: Player): void {}
 	public endFrame(): void {}
-	public drawLine(_from: Vector2, _to: Vector2, _fromColor: Color, _toColor: Color): void {}
-	public onResize(_width: number, _height: number): void {}
+	public drawLine(from: Vector2, to: Vector2, fromColor: Color, toColor: Color): void {}
+	public onResize(width: number, height: number): void {}
 	public hasInitialized(): boolean {
 		return false
 	}
+
+	public getRayCountMultiplier = (): number => this.rayCountMultiplier
 }

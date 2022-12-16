@@ -29,6 +29,10 @@ export class Vector2 {
 		return Math.sqrt(this.x ** 2 + this.y ** 2)
 	}
 
+	public getLengthSqr(): number {
+		return this.x ** 2 + this.y ** 2
+	}
+
 	public normalized(): Vector2 {
 		let len: number = this.getLength()
 		let result: Vector2 = this.copy()
