@@ -6,7 +6,7 @@ import { Canvas2dRenderer } from './renderers/canvas2d_renderer.js'
 import { Player } from './player.js'
 
 export let canvas: HTMLCanvasElement
-export const clearColor: Color = new Color(0, 0, 1)
+export const clearColor: Color = new Color(0.43, 0.5, 0.87)
 export let lineWidth: number = 1
 export let rendererEnum: RendererType
 export let guiCanvas: HTMLCanvasElement
