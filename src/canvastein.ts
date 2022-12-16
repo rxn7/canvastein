@@ -134,7 +134,7 @@ export class Canvastein {
 
 	private drawWorld(): void {
 		let rayCount: number = Graphics.canvas.width
-		if (Graphics.rendererEnum == Graphics.RendererType.Canvas2D) rayCount *= 0.5 // Lower the quality if using Canvas2D renderer. Canvas2D renderer can't handle rendering that much lines.
+		if (Graphics.rendererEnum == Graphics.RendererType.Canvas2D) rayCount *= 0.1 // Lower the quality if using Canvas2D renderer. Canvas2D renderer can't handle rendering that much lines.
 		const forwardDirection: Vector2 = new Vector2(Math.cos(Maths.deg2Rad(this.player.yaw)), -Math.sin(Maths.deg2Rad(this.player.yaw)))
 		const rightDirection: Vector2 = new Vector2(-forwardDirection.y, forwardDirection.x)
 		let rayPosition: Vector2 = this.player.position.copy()
