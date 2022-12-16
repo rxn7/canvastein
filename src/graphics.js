@@ -3,7 +3,7 @@ import { Color } from './color.js';
 import { WebGLRenderer } from './renderers/webgl_renderer.js';
 import { Canvas2dRenderer } from './renderers/canvas2d_renderer.js';
 export let canvas;
-export const clearColor = new Color(0, 0, 1);
+export const clearColor = new Color(0.43, 0.5, 0.87);
 export let lineWidth = 1;
 export let rendererEnum;
 export let guiCanvas;

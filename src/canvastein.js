@@ -115,7 +115,7 @@ export class Canvastein {
     drawWorld() {
         let rayCount = Graphics.canvas.width;
         if (Graphics.rendererEnum == Graphics.RendererType.Canvas2D)
-            rayCount *= 0.5;
+            rayCount *= 0.1;
         const forwardDirection = new Vector2(Math.cos(Maths.deg2Rad(this.player.yaw)), -Math.sin(Maths.deg2Rad(this.player.yaw)));
         const rightDirection = new Vector2(-forwardDirection.y, forwardDirection.x);
         let rayPosition = this.player.position.copy();
