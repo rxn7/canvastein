@@ -1,15 +1,15 @@
 {
-	"name": "clock",
+	"name": "canvastein",
 	"version": "1.0.0",
-	"description": "Real-time analog clock written in Canvas2D",
+	"description": "Raycasted game running in WebGL2 or Canvas2D",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/rxn7/clock.git"
+		"url": "git+https://github.com/rxn7/canvastein.git"
 	},
 	"keywords": [
 		"typescript"
 	],
 	"author": "rxn7",
 	"license": "ISC",
-	"homepage": "https://github.com/rxn7/clock"
+	"homepage": "https://github.com/rxn7/canvastein#readme"
 }

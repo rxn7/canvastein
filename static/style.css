@@ -2,12 +2,24 @@ body {
 	padding: 0;
 	margin: 0;
 }
-
-canvas {
-	z-index: 1;
+#canvas-container {
 	position: fixed;
 	left: 0;
 	top: 0;
-	height: 100%;
-	width: 100%;
+	width: 100vw;
+	height: 100vh;
+	background-color: black;
+}
+canvas {
+	z-index: 1;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	object-fit: contain;
+	max-width: 1920px;
+	max-height: 100%;
+}
+#gui-canvas {
+	z-index: 2 !important;
 }
