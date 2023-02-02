@@ -5,7 +5,7 @@ set -e
 rm -rf build
 mkdir build
 
-npx tsc --project $(pwd)
+tsc --project $(pwd)
 cp -r static/* build
 
 minify static/index.html -o build/index.html
